@@ -10,3 +10,4 @@ edition = "2018"
 [dependencies]
 
 gtk = { version = "0.4", package = "gtk4" }
+btleplug = { version = "0.4", features = ["serde"] }
