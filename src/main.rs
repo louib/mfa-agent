@@ -45,8 +45,14 @@ fn build_ui(app: &Application) {
     let window: ApplicationWindow = builder
         .object("window")
         .expect("Could not get object `window` from builder.");
+    let list: ListBox = builder
+        .object("list_box")
+        .expect("Could not get object `window` from builder.");
     let button: Button = builder
         .object("button")
+        .expect("Could not get object `button` from builder.");
+    let button2: Button = builder
+        .object("button_2")
         .expect("Could not get object `button` from builder.");
 
     // Set application
@@ -58,7 +64,9 @@ fn build_ui(app: &Application) {
         button.set_label("Hello World!");
     });
 
-    // Add button
-    window.set_child(Some(&button));
+    // Add buttons
+    list.append(&button);
+    list.append(&button2);
+    window.set_child(Some(&list));
     window.present();
 }
