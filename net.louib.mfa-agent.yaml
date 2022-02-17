@@ -13,6 +13,7 @@ command: /app/bin/mfa-agent
 tags:
   - nightly
 finish-args:
+  - "--allow=bluetooth"
   - "--share=network"
   - "--share=ipc"
   - "--socket=fallback-x11"

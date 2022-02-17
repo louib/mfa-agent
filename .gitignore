@@ -1,3 +1,5 @@
 /target
 
 .flatpak-builder*/
+.fenv/
+.flatpak/

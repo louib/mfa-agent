@@ -1,11 +1,27 @@
 [package]
 name = "mfa-agent"
+authors = ["louib <code@louib.net>"]
+
+repository = "https://github.com/louib/mfa-agent/"
+description = " Multi-Factor authentication agent for Linux."
+
 version = "0.0.1"
 edition = "2018"
+
+keywords = [
+  "linux",
+  "mfa",
+  "bluetooth",
+]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.8.4"
+
+log = "0.4"
+simple-logging = "2.0"
 
 gtk = { version = "0.4", package = "gtk4" }
 tokio = { version = "1.1", features = ["full"] }
