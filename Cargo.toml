@@ -31,4 +31,4 @@ gtk-macros = "0.3"
 libhandy = "0.9"
 
 tokio = { version = "1.1", features = ["full"] }
-btleplug = { version = "0.4", features = ["serde"] }
+btleplug = { version = "0.9", features = ["serde"] }

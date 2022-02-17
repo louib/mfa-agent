@@ -1,7 +1,7 @@
 use std::error::Error;
 
-// use btleplug::api::{bleuuid::uuid_from_u16, Central, Manager as _, Peripheral as _, ScanFilter, WriteType};
-// use btleplug::platform::{Adapter, Manager, Peripheral};
+use btleplug::api::{bleuuid::uuid_from_u16, Central, Manager as _, Peripheral as _, ScanFilter, WriteType};
+use btleplug::platform::{Adapter, Manager, Peripheral};
 use gtk::prelude::*;
 use gtk::{Application, ApplicationWindow, Button, ListBox, Switch};
 use tokio::time;
