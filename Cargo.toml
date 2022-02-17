@@ -32,3 +32,4 @@ libhandy = "0.9"
 
 tokio = { version = "1.1", features = ["full"] }
 btleplug = { version = "0.9", features = ["serde"] }
+bluer = "0.13"
