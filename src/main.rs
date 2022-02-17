@@ -16,6 +16,7 @@ const APP_TITLE: &str = "MFA Agent";
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     logger::init();
+    libhandy::init();
 
     // Create a new application
     let app = Application::builder().application_id(APP_ID).build();
@@ -34,40 +35,27 @@ pub enum Numbers {
 }
 
 fn build_ui(app: &Application) {
-    let list_box = ListBox::new();
+    // Init `gtk::Builder` from file
+    let builder = gtk::Builder::from_string(include_str!("ui/main.ui"));
 
-    let button = Button::builder()
-        .label("Allow request for authentication?")
-        .margin_top(12)
-        .margin_bottom(12)
-        .margin_start(12)
-        .margin_end(12)
-        .build();
+    // Get window and button from `gtk::Builder`
+    let window: ApplicationWindow = builder
+        .object("window")
+        .expect("Could not get object `window` from builder.");
+    let button: Button = builder
+        .object("button")
+        .expect("Could not get object `button` from builder.");
 
-    let switch = Switch::builder()
-        .margin_top(12)
-        .margin_bottom(12)
-        .margin_start(12)
-        .margin_end(12)
-        .build();
+    // Set application
+    window.set_application(Some(app));
 
+    // Connect to "clicked" signal
     button.connect_clicked(move |button| {
         // Set the label to "Hello World!" after the button has been clicked on
         button.set_label("Hello World!");
     });
 
-    switch.connect_active_notify(move |switch| {
-        println!("The value for the switch is now {}", switch.is_active());
-    });
-
-    list_box.append(&button);
-    list_box.append(&switch);
-
-    let window = ApplicationWindow::builder()
-        .application(app)
-        .title(APP_TITLE)
-        .child(&list_box)
-        .build();
-
+    // Add button
+    window.set_child(Some(&button));
     window.present();
 }
