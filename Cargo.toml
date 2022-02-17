@@ -20,10 +20,15 @@ keywords = [
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8.4"
 
+# Logging libs
 log = "0.4"
 simple-logging = "2.0"
 
+# GTK related libs
 gtk = { version = "0.4", package = "gtk4" }
+gio = { version = "0.15", features = ["v2_50"] }
+gtk-macros = "0.3"
+libhandy = "0.9"
+
 tokio = { version = "1.1", features = ["full"] }
 btleplug = { version = "0.4", features = ["serde"] }
-libhandy = "0.9"
