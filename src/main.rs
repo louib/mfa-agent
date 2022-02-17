@@ -16,6 +16,10 @@ const APP_TITLE: &str = "MFA Agent";
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     logger::init();
+
+    if let Err(e) = gtk::init() {
+        panic!("Failed to initialize GTK: {}", e);
+    }
     libhandy::init();
 
     // Create a new application
