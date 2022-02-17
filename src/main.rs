@@ -20,7 +20,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if let Err(e) = gtk::init() {
         panic!("Failed to initialize GTK: {}", e);
     }
-    libhandy::init();
 
     // Create a new application
     let app = Application::builder().application_id(APP_ID).build();
