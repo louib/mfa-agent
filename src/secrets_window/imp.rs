@@ -1,8 +1,8 @@
-use gtk::{gio, glib};
+use glib::subclass::types::{InitializingObject, ObjectSubclass};
 use glib::Object;
-use glib::subclass::types::{ObjectSubclass, InitializingObject};
-use gtk::{CompositeTemplate, Entry, ListView, Application, ApplicationWindow, Button, ListBox, Switch};
 use gtk::subclass::widget::TemplateChild;
+use gtk::{gio, glib};
+use gtk::{Application, ApplicationWindow, Button, CompositeTemplate, Entry, ListBox, ListView, Switch};
 //
 // Object holding the state
 #[derive(CompositeTemplate, Default)]
