@@ -7,6 +7,7 @@ use gtk::{Application, ApplicationWindow, Button, ListBox, Switch};
 use tokio::time;
 
 mod config;
+mod secrets_window;
 mod logger;
 
 const APP_ID: &str = "net.louib.mfa-agent";
