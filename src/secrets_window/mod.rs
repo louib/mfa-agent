@@ -5,9 +5,12 @@ use gtk::{Application, Button};
 mod imp {
     use glib::subclass::object::ObjectImpl;
     use glib::subclass::prelude::ObjectSubclass;
+    use glib::subclass::InitializingObject;
     use gtk::subclass::prelude::{WidgetImpl, TemplateChild};
     use gtk::subclass::widget::WidgetClassSubclassExt;
     use gtk::{Button, CompositeTemplate};
+    use gtk::subclass::widget::CompositeTemplate;
+    use gtk::prelude::InitializingWidgetExt;
 
     #[derive(CompositeTemplate, Default)]
     #[template(file = "./template.ui")]
@@ -18,10 +21,22 @@ mod imp {
 
     #[glib::object_subclass]
     impl ObjectSubclass for SecretsWindow {
+        // This name must correspond to the name of the class in the
+        // template file
         const NAME: &'static str = "SecretsWindow";
 
-        type Type = super::SecretsWindow;
+        // This must correspond to the `parent` in the template file.
         type ParentType = glib::Object;
+
+        type Type = super::SecretsWindow;
+
+        fn class_init(klass: &mut Self::Class) {
+            Self::bind_template(klass);
+        }
+
+        fn instance_init(obj: &InitializingObject<Self>) {
+            obj.init_template();
+        }
     }
 
     impl ObjectImpl for SecretsWindow {}
