@@ -2,8 +2,8 @@ use std::error::Error;
 
 use btleplug::api::{bleuuid::uuid_from_u16, Central, Manager as _, Peripheral as _, ScanFilter, WriteType};
 use btleplug::platform::{Adapter, Manager, Peripheral};
-use gtk::prelude::*;
 use gio::prelude::*;
+use gtk::prelude::*;
 use gtk::{Application, ApplicationWindow, Button, ListBox, Switch};
 use tokio::time;
 
@@ -18,7 +18,7 @@ const APP_TITLE: &str = "MFA Agent";
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     // if let Err(e) = gio::resources_register_include!("ui.gresource") {
-        // panic!("Failed to register resources.");
+    // panic!("Failed to register resources.");
     // }
 
     logger::init();
