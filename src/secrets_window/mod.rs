@@ -1,17 +1,20 @@
 use gtk::subclass::widget::TemplateChild;
 use gtk::{gio, glib};
-use gtk::Application;
+use gtk::{Application, Button};
 
 mod imp {
     use glib::subclass::object::ObjectImpl;
     use glib::subclass::prelude::ObjectSubclass;
-    use gtk::subclass::prelude::WidgetImpl;
+    use gtk::subclass::prelude::{WidgetImpl, TemplateChild};
     use gtk::subclass::widget::WidgetClassSubclassExt;
-    use gtk::CompositeTemplate;
+    use gtk::{Button, CompositeTemplate};
 
     #[derive(CompositeTemplate, Default)]
     #[template(file = "./template.ui")]
-    pub struct SecretsWindow;
+    pub struct SecretsWindow {
+        #[template_child]
+        pub button: TemplateChild<Button>,
+    }
 
     #[glib::object_subclass]
     impl ObjectSubclass for SecretsWindow {
