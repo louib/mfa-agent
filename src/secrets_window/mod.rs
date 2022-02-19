@@ -3,14 +3,14 @@ use gtk::{gio, glib};
 use gtk::{Application, Button};
 
 mod imp {
-    use glib::subclass::object::ObjectImpl;
+    use glib::subclass::object::{ObjectImpl, ObjectImplExt};
     use glib::subclass::prelude::ObjectSubclass;
     use glib::subclass::InitializingObject;
-    use gtk::subclass::prelude::{WidgetImpl, TemplateChild};
+    use gtk::prelude::{InitializingWidgetExt, ButtonExt};
+    use gtk::subclass::prelude::{TemplateChild, WidgetImpl};
+    use gtk::subclass::widget::CompositeTemplate;
     use gtk::subclass::widget::WidgetClassSubclassExt;
     use gtk::{Button, CompositeTemplate};
-    use gtk::subclass::widget::CompositeTemplate;
-    use gtk::prelude::InitializingWidgetExt;
 
     #[derive(CompositeTemplate, Default)]
     #[template(file = "./template.ui")]
@@ -39,7 +39,19 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for SecretsWindow {}
+    impl ObjectImpl for SecretsWindow {
+        fn constructed(&self, obj: &Self::Type) {
+            // Call "constructed" on parent
+            self.parent_constructed(obj);
+
+            // Connect to "clicked" signal of `button`
+            self.button.connect_clicked(move |button| {
+                // Set the label to "Hello World!" after the button has been clicked on
+                button.set_label("Hello World!");
+            });
+        }
+    }
+
     impl WidgetImpl for SecretsWindow {}
 }
 
