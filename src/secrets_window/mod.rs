@@ -1,13 +1,16 @@
 use gtk::subclass::widget::TemplateChild;
 use gtk::{gio, glib};
-use gtk::{Application, CompositeTemplate};
+use gtk::Application;
 
 mod imp {
     use glib::subclass::object::ObjectImpl;
     use glib::subclass::prelude::ObjectSubclass;
+    use gtk::subclass::prelude::WidgetImpl;
+    use gtk::subclass::widget::WidgetClassSubclassExt;
+    use gtk::CompositeTemplate;
 
-    #[derive(Default)]
-    // #[template(file = "../ui/search.ui")]
+    #[derive(CompositeTemplate, Default)]
+    #[template(file = "./template.ui")]
     pub struct SecretsWindow;
 
     #[glib::object_subclass]
@@ -19,6 +22,7 @@ mod imp {
     }
 
     impl ObjectImpl for SecretsWindow {}
+    impl WidgetImpl for SecretsWindow {}
 }
 
 glib::wrapper! {
