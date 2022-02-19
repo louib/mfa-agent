@@ -6,7 +6,7 @@ mod imp {
     use glib::subclass::object::{ObjectImpl, ObjectImplExt};
     use glib::subclass::prelude::ObjectSubclass;
     use glib::subclass::InitializingObject;
-    use gtk::prelude::{InitializingWidgetExt, ButtonExt};
+    use gtk::prelude::{ButtonExt, InitializingWidgetExt};
     use gtk::subclass::prelude::{TemplateChild, WidgetImpl};
     use gtk::subclass::widget::CompositeTemplate;
     use gtk::subclass::widget::WidgetClassSubclassExt;
