@@ -3,6 +3,8 @@ use gtk::{gio, glib};
 use gtk::{Application, Button};
 
 mod imp {
+    use std::cell::Cell;
+
     use glib::subclass::object::{ObjectImpl, ObjectImplExt};
     use glib::subclass::prelude::ObjectSubclass;
     use glib::subclass::InitializingObject;
@@ -17,6 +19,8 @@ mod imp {
     pub struct SecretsWindow {
         #[template_child]
         pub button: TemplateChild<Button>,
+
+        pub current_search: Cell<String>,
     }
 
     #[glib::object_subclass]
