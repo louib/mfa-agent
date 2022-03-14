@@ -6,7 +6,7 @@ sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-nightly
 build-options:
-  append-path: "/usr/lib/sdk/rust-nightly/bin:/home/$USER/.cargo/bin"
+  append-path: "/usr/lib/sdk/rust-nightly/bin"
   build-args:
     - "--share=network"
 command: /app/bin/mfa-agent
@@ -28,17 +28,10 @@ finish-args:
   - "--env=MFA_AGENT_LOG_LEVEL=info"
   - "--env=RUST_BACKTRACE=1"
 modules:
-  - name: cargo
-    sources:
-      - type: git
-        url: https://github.com/rust-lang/cargo.git
-    buildsystem: simple
-    build-commands:
-      - cargo install --force --path . --root "/home/$USER/.cargo"
   - name: mfa-agent
     sources:
       - type: git
         url: https://github.com/louib/mfa-agent.git
     buildsystem: simple
     build-commands:
-      - cargo install --force --path . --root /app
+      - /usr/lib/sdk/rust-nightly/bin/cargo install --force --path . --root /app
