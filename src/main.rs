@@ -10,6 +10,7 @@ use tokio::time;
 mod config;
 mod logger;
 mod secrets_window;
+mod secrets;
 
 const APP_ID: &str = "net.louib.mfa-agent";
 const APP_NAME: &str = "mfa-agent";
