@@ -1,7 +1,7 @@
 use std::error::Error;
 
 // use bluer::{Adapter, AdapterEvent, Address, DeviceEvent};
-use bluer::{Address, Adapter};
+use bluer::{Adapter, Address};
 // use btleplug::api::{bleuuid::uuid_from_u16, Central, Manager as _, Peripheral as _, ScanFilter, WriteType};
 // use btleplug::platform::{Manager, Peripheral};
 use gio::prelude::*;
@@ -84,7 +84,10 @@ async fn query_device(adapter: &Adapter, addr: Address) -> bluer::Result<()> {
     let device = adapter.device(addr)?;
     println!("    Address type:       {}", device.address_type().await?);
     println!("    Name:               {:?}", device.name().await?);
-    println!("    UUIDs:              {:?}", device.uuids().await?.unwrap_or_default());
+    println!(
+        "    UUIDs:              {:?}",
+        device.uuids().await?.unwrap_or_default()
+    );
     println!("    RSSI:               {:?}", device.rssi().await?);
     Ok(())
 }
