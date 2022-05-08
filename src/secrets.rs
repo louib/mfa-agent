@@ -21,9 +21,17 @@ pub mod KeePassXC {
     }
 
     pub struct Group {
+        pub uuid: String,
+
         pub name: String,
         pub notes: String,
         pub tags: String,
+
+        entries: Vec<Entry>,
     }
 
+    pub struct Database {
+        entries: Vec<Entry>,
+        groups: Vec<Entry>,
+    }
 }
