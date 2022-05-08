@@ -1,10 +1,11 @@
 use std::error::Error;
 
-// use bluer::{Adapter, AdapterEvent, Address, DeviceEvent};
-use bluer::{Adapter, Address};
+use bluer::{Adapter, AdapterEvent, Address, DeviceEvent};
 // use btleplug::api::{bleuuid::uuid_from_u16, Central, Manager as _, Peripheral as _, ScanFilter, WriteType};
 // use btleplug::platform::{Manager, Peripheral};
+use futures::{pin_mut, stream::SelectAll, StreamExt};
 use gio::prelude::*;
+use gtk::prelude::WidgetExt;
 use gtk::prelude::*;
 use gtk::{Application, ApplicationWindow, Button, ListBox, Switch};
 use tokio::time;
@@ -80,6 +81,17 @@ fn build_ui(app: &Application) {
     window.present();
 }
 
+pub enum ApplicationEvent {
+    AddKnownDevice(String),
+    PairWithDevice(String),
+    UnpairWithDevice(String),
+    AllowSecretAccess(String),
+}
+
+async fn handle_app_event(event: &ApplicationEvent) -> Result<(), String> {
+    Ok(())
+}
+
 async fn query_device(adapter: &Adapter, addr: Address) -> bluer::Result<()> {
     let device = adapter.device(addr)?;
     println!("    Address type:       {}", device.address_type().await?);
@@ -98,5 +110,65 @@ async fn query_all_device_properties(adapter: &Adapter, addr: Address) -> bluer:
     for prop in props {
         println!("    {:?}", &prop);
     }
+    Ok(())
+}
+
+async fn discover_devices() -> bluer::Result<()> {
+    let with_changes = true;
+    let all_properties = true;
+
+    let session = bluer::Session::new().await?;
+    let adapter = session.default_adapter().await?;
+    println!(
+        "Discovering devices using Bluetooth adapater {}\n",
+        adapter.name()
+    );
+    adapter.set_powered(true).await?;
+
+    let device_events = adapter.discover_devices().await?;
+    pin_mut!(device_events);
+
+    let mut all_change_events = SelectAll::new();
+
+    loop {
+        tokio::select! {
+            Some(device_event) = device_events.next() => {
+                match device_event {
+                    AdapterEvent::DeviceAdded(addr) => {
+                        // if !filter_addr.is_empty() && !filter_addr.contains(&addr) {
+                            // continue;
+                        // }
+
+                        println!("Device added: {}", addr);
+                        let res = if all_properties {
+                            query_all_device_properties(&adapter, addr).await
+                        } else {
+                            query_device(&adapter, addr).await
+                        };
+                        if let Err(err) = res {
+                            println!("    Error: {}", &err);
+                        }
+
+                        if with_changes {
+                            let device = adapter.device(addr)?;
+                            let change_events = device.events().await?.map(move |evt| (addr, evt));
+                            all_change_events.push(change_events);
+                        }
+                    }
+                    AdapterEvent::DeviceRemoved(addr) => {
+                        println!("Device removed: {}", addr);
+                    }
+                    _ => (),
+                }
+                println!();
+            }
+            Some((addr, DeviceEvent::PropertyChanged(property))) = all_change_events.next() => {
+                println!("Device changed: {}", addr);
+                println!("    {:?}", property);
+            }
+            else => break
+        }
+    }
+
     Ok(())
 }

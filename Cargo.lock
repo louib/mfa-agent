@@ -989,6 +989,7 @@ version = "0.0.1"
 dependencies = [
  "bluer",
  "btleplug",
+ "futures",
  "gio",
  "glib",
  "gtk-macros",

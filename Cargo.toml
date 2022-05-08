@@ -37,6 +37,8 @@ tokio = { version = "1.1", features = ["full"] }
 btleplug = { version = "0.9", features = ["serde"] }
 bluer = { version = "0.15", features = ["bluetoothd"] }
 
+futures = "0.3"
+
 [build-dependencies]
 # Needed in the build dependencies to compile the gresources
 gtk = { version = "0.4", package = "gtk4" }
