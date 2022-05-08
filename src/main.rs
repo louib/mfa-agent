@@ -1,7 +1,9 @@
 use std::error::Error;
 
-use btleplug::api::{bleuuid::uuid_from_u16, Central, Manager as _, Peripheral as _, ScanFilter, WriteType};
-use btleplug::platform::{Adapter, Manager, Peripheral};
+// use bluer::{Adapter, AdapterEvent, Address, DeviceEvent};
+use bluer::{Address, Adapter};
+// use btleplug::api::{bleuuid::uuid_from_u16, Central, Manager as _, Peripheral as _, ScanFilter, WriteType};
+// use btleplug::platform::{Manager, Peripheral};
 use gio::prelude::*;
 use gtk::prelude::*;
 use gtk::{Application, ApplicationWindow, Button, ListBox, Switch};
@@ -76,4 +78,22 @@ fn build_ui(app: &Application) {
     list.append(&button2);
     window.set_child(Some(&list));
     window.present();
+}
+
+async fn query_device(adapter: &Adapter, addr: Address) -> bluer::Result<()> {
+    let device = adapter.device(addr)?;
+    println!("    Address type:       {}", device.address_type().await?);
+    println!("    Name:               {:?}", device.name().await?);
+    println!("    UUIDs:              {:?}", device.uuids().await?.unwrap_or_default());
+    println!("    RSSI:               {:?}", device.rssi().await?);
+    Ok(())
+}
+
+async fn query_all_device_properties(adapter: &Adapter, addr: Address) -> bluer::Result<()> {
+    let device = adapter.device(addr)?;
+    let props = device.all_properties().await?;
+    for prop in props {
+        println!("    {:?}", &prop);
+    }
+    Ok(())
 }

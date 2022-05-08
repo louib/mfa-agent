@@ -35,7 +35,7 @@ libhandy = "0.9"
 
 tokio = { version = "1.1", features = ["full"] }
 btleplug = { version = "0.9", features = ["serde"] }
-bluer = "0.13"
+bluer = { version = "0.15", features = ["bluetoothd"] }
 
 [build-dependencies]
 # Needed in the build dependencies to compile the gresources
