@@ -19,7 +19,7 @@ const APP_TITLE: &str = "MFA Agent";
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     if let Err(e) = gio::resources_register_include!("ui.gresource") {
-      panic!("Failed to register resources.");
+        panic!("Failed to register resources.");
     }
 
     logger::init();
