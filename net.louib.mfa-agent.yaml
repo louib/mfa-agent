@@ -18,6 +18,8 @@ finish-args:
   - "--share=ipc"
   - "--socket=fallback-x11"
   - "--socket=wayland"
+  # FIXME this should be avoided, see https://docs.flatpak.org/en/latest/sandbox-permissions.html#d-bus-access
+  - "--socket=system-bus"
   - "--device=dri"
   - "--env=MFA_AGENT_LOG_LEVEL=info"
   - "--env=RUST_BACKTRACE=1"

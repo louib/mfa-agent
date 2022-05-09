@@ -1,5 +1,6 @@
 use std::error::Error;
 
+use bluer::adv::Advertisement;
 use bluer::{Adapter, AdapterEvent, Address, DeviceEvent};
 // use btleplug::api::{bleuuid::uuid_from_u16, Central, Manager as _, Peripheral as _, ScanFilter, WriteType};
 // use btleplug::platform::{Manager, Peripheral};
@@ -8,7 +9,11 @@ use gio::prelude::*;
 use gtk::prelude::WidgetExt;
 use gtk::prelude::*;
 use gtk::{Application, ApplicationWindow, Button, ListBox, Switch};
-use tokio::time;
+use std::time::Duration;
+use tokio::{
+    io::{AsyncBufReadExt, BufReader},
+    time::sleep,
+};
 
 mod config;
 mod logger;
@@ -21,15 +26,17 @@ const APP_TITLE: &str = "MFA Agent";
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    if let Err(e) = gio::resources_register_include!("ui.gresource") {
-        panic!("Failed to register resources.");
-    }
-
     logger::init();
+
+    if let Err(e) = gio::resources_register_include!("ui.gresource") {
+        panic!("Failed to register resources: {}.", e);
+    }
 
     if let Err(e) = gtk::init() {
         panic!("Failed to initialize GTK: {}", e);
     }
+
+    advertise().await?;
 
     // Create a new application
     let app = Application::builder().application_id(APP_ID).build();
@@ -81,6 +88,11 @@ fn build_ui(app: &Application) {
     window.present();
 }
 
+pub struct BluetoothDevice {
+    pub address: String,
+    pub name: Option<String>,
+}
+
 pub enum ApplicationEvent {
     AddKnownDevice(String),
     PairWithDevice(String),
@@ -92,30 +104,8 @@ async fn handle_app_event(event: &ApplicationEvent) -> Result<(), String> {
     Ok(())
 }
 
-async fn query_device(adapter: &Adapter, addr: Address) -> bluer::Result<()> {
-    let device = adapter.device(addr)?;
-    println!("    Address type:       {}", device.address_type().await?);
-    println!("    Name:               {:?}", device.name().await?);
-    println!(
-        "    UUIDs:              {:?}",
-        device.uuids().await?.unwrap_or_default()
-    );
-    println!("    RSSI:               {:?}", device.rssi().await?);
-    Ok(())
-}
-
-async fn query_all_device_properties(adapter: &Adapter, addr: Address) -> bluer::Result<()> {
-    let device = adapter.device(addr)?;
-    let props = device.all_properties().await?;
-    for prop in props {
-        println!("    {:?}", &prop);
-    }
-    Ok(())
-}
-
 async fn discover_devices() -> bluer::Result<()> {
-    let with_changes = true;
-    let all_properties = true;
+    log::info!("Discovering devices");
 
     let session = bluer::Session::new().await?;
     let adapter = session.default_adapter().await?;
@@ -128,47 +118,55 @@ async fn discover_devices() -> bluer::Result<()> {
     let device_events = adapter.discover_devices().await?;
     pin_mut!(device_events);
 
-    let mut all_change_events = SelectAll::new();
-
     loop {
         tokio::select! {
             Some(device_event) = device_events.next() => {
                 match device_event {
                     AdapterEvent::DeviceAdded(addr) => {
-                        // if !filter_addr.is_empty() && !filter_addr.contains(&addr) {
-                            // continue;
-                        // }
-
-                        println!("Device added: {}", addr);
-                        let res = if all_properties {
-                            query_all_device_properties(&adapter, addr).await
-                        } else {
-                            query_device(&adapter, addr).await
-                        };
-                        if let Err(err) = res {
-                            println!("    Error: {}", &err);
-                        }
-
-                        if with_changes {
-                            let device = adapter.device(addr)?;
-                            let change_events = device.events().await?.map(move |evt| (addr, evt));
-                            all_change_events.push(change_events);
-                        }
-                    }
-                    AdapterEvent::DeviceRemoved(addr) => {
-                        println!("Device removed: {}", addr);
+                        let device = adapter.device(addr)?;
+                        let name = device.name().await?;
+                        println!("Device added: {} ({})", addr, name.unwrap_or("unknown".to_string()));
                     }
                     _ => (),
                 }
-                println!();
-            }
-            Some((addr, DeviceEvent::PropertyChanged(property))) = all_change_events.next() => {
-                println!("Device changed: {}", addr);
-                println!("    {:?}", property);
             }
             else => break
         }
     }
 
+    Ok(())
+}
+
+async fn advertise() -> bluer::Result<()> {
+    let session = bluer::Session::new().await?;
+    let adapter = session.default_adapter().await?;
+    adapter.set_powered(true).await?;
+
+    println!(
+        "Advertising on Bluetooth adapter {} with address {}",
+        adapter.name(),
+        adapter.address().await?
+    );
+    let le_advertisement = Advertisement {
+        advertisement_type: bluer::adv::Type::Peripheral,
+        // FIXME change the UUID to something that is unique for this device.
+        service_uuids: vec!["123e4567-e89b-12d3-a456-426614174000".parse().unwrap()]
+            .into_iter()
+            .collect(),
+        discoverable: Some(true),
+        local_name: Some("mfa-agent (remote)".to_string()),
+        ..Default::default()
+    };
+    println!("{:?}", &le_advertisement);
+    let handle = adapter.advertise(le_advertisement).await?;
+
+    println!("Press enter to quit");
+    let stdin = BufReader::new(tokio::io::stdin());
+    let mut lines = stdin.lines();
+    let _ = lines.next_line().await;
+
+    println!("Removing advertisement");
+    drop(handle);
+    sleep(Duration::from_secs(1)).await;
     Ok(())
 }
