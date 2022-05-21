@@ -1,15 +1,13 @@
 use std::error::Error;
+use std::time::Duration;
 
 use bluer::adv::Advertisement;
 use bluer::{Adapter, AdapterEvent, Address, DeviceEvent};
-// use btleplug::api::{bleuuid::uuid_from_u16, Central, Manager as _, Peripheral as _, ScanFilter, WriteType};
-// use btleplug::platform::{Manager, Peripheral};
 use futures::{pin_mut, stream::SelectAll, StreamExt};
 use gio::prelude::*;
 use gtk::prelude::WidgetExt;
 use gtk::prelude::*;
 use gtk::{Application, ApplicationWindow, Button, ListBox, Switch};
-use std::time::Duration;
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     time::sleep,

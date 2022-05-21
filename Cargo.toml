@@ -7,6 +7,7 @@ description = " Multi-Factor authentication agent for Linux."
 
 version = "0.0.1"
 edition = "2018"
+rust-version = "1.60"
 
 keywords = [
   "linux",
@@ -34,7 +35,6 @@ gtk-macros = "0.3"
 libhandy = "0.9"
 
 tokio = { version = "1.1", features = ["full"] }
-btleplug = { version = "0.9", features = ["serde"] }
 bluer = { version = "0.15", features = ["bluetoothd"] }
 
 futures = "0.3"
