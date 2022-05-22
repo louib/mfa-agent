@@ -46,6 +46,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Connect to "activate" signal of `app`
     app.connect_activate(build_unlock_ui);
 
+    let quit = gio::SimpleAction::new("quit", None);
+    quit.connect_activate(glib::clone!(@weak app => move |_action, _parameter| {
+        app.quit();
+    }));
+    app.connect_startup(|app| {
+        app.set_accels_for_action("app.quit", &["<Primary>Q"]);
+    });
+    app.add_action(&quit);
+
     // Run the application
     app.run();
 
@@ -74,7 +83,8 @@ fn build_unlock_ui(app: &Application) {
     let peak_button: Button = builder
         .object("peak")
         .expect("Could not get the peak button from builder.");
-    top_box.append(&password_label);
+    password_label.set_text("Opening database at /path/to/db.kdbx");
+    // top_box.append(&password_label);
     // top_box.append(&peak_button);
 
     let submit_button: Button = builder
@@ -84,11 +94,11 @@ fn build_unlock_ui(app: &Application) {
         .object("password")
         .expect("Could not get the password field from builder.");
     // Put the entry field in password mode.
-    // password_field.set_visibility(false);
+    password_field.set_visibility(true);
     password_field.set_width_chars(40);
     // bottom_box.append(&submit_button);
     // bottom_box.append(&password_field);
-
+    //
     let parent_box: GtkBox = builder
         .object("parent_box")
         .expect("Could not get the parent box from builder.");
@@ -97,6 +107,11 @@ fn build_unlock_ui(app: &Application) {
 
     // Set application
     window.set_application(Some(app));
+
+    password_field.connect_activate(move |password_field| {
+        let password = password_field.text();
+        println!("Wow, the password is {}.", &password);
+    });
 
     // Connect to "clicked" signal
     submit_button.connect_clicked(move |button| {
@@ -109,7 +124,7 @@ fn build_unlock_ui(app: &Application) {
     // Add buttons
     // list.append(&button);
     // list.append(&button2);
-    // window.set_child(Some(&list));
+    window.set_child(Some(&parent_box));
     window.present();
 }
 
