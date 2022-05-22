@@ -8,6 +8,16 @@ pub struct NumPad {}
 
 #[derive(Clone, Debug)]
 pub enum Message {
+    Zero,
+    One,
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine,
     Exit,
 }
 
@@ -21,6 +31,7 @@ impl Component for NumPad {
                 vgtk::quit();
                 UpdateAction::None
             }
+            _ => UpdateAction::None,
         }
     }
 
