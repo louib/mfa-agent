@@ -8,17 +8,17 @@ use futures::{pin_mut, stream::SelectAll, StreamExt};
 use gio::prelude::*;
 use gtk::prelude::WidgetExt;
 use gtk::prelude::*;
-use gtk::{Application, ApplicationWindow, Button, ListBox, Switch};
+use gtk::{Application, ApplicationWindow, Box as GtkBox, Button, Entry, Label, ListBox, Switch};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     time::sleep,
 };
-use vgtk::run;
+// use vgtk::run;
 
 mod config;
 mod consts;
 mod logger;
-mod numpad;
+// mod numpad;
 mod secrets;
 mod secrets_window;
 
@@ -34,26 +34,81 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // panic!("Failed to initialize GTK: {}", e);
     // }
 
-    std::process::exit(run::<crate::numpad::NumPad>());
+    // std::process::exit(run::<crate::numpad::NumPad>());
 
     // advertise().await?;
 
     // Create a new application
-    //let app = Application::builder()
-    //.application_id(crate::consts::APP_ID)
-    //.build();
+    let app = Application::builder()
+        .application_id(crate::consts::APP_ID)
+        .build();
 
     // Connect to "activate" signal of `app`
-    // app.connect_activate(build_ui);
+    app.connect_activate(build_unlock_ui);
 
     // Run the application
-    // app.run();
+    app.run();
 
     Ok(())
 }
 
+fn build_unlock_ui(app: &Application) {
+    let builder = gtk::Builder::from_string(include_str!("ui/unlock.ui"));
+
+    // Get window and button from `gtk::Builder`
+    let window: ApplicationWindow = builder
+        .object("window")
+        .expect("Could not get object `window` from builder.");
+
+    let password_label: Label = builder
+        .object("label")
+        .expect("Could not get the label field from builder.");
+    password_label.set_text("Please enter your password to unlock the database.");
+    let peak_button: Button = builder
+        .object("peak")
+        .expect("Could not get the peak button from builder.");
+    let top_box: GtkBox = builder
+        .object("top_box")
+        .expect("Could not get the top box from builder.");
+    top_box.append(&password_label);
+    top_box.append(&peak_button);
+
+    let submit_button: Button = builder
+        .object("submit")
+        .expect("Could not get the submit button from builder.");
+    let password_field: Entry = builder
+        .object("password")
+        .expect("Could not get the password field from builder.");
+    // Put the entry field in password mode.
+    password_field.set_visibility(false);
+    password_field.set_width_chars(40);
+    let bottom_box: GtkBox = builder
+        .object("bottom_box")
+        .expect("Could not get the bottom box from builder.");
+    bottom_box.append(&password_field);
+    bottom_box.append(&submit_button);
+
+    let parent_box: GtkBox = builder
+        .object("parent_box")
+        .expect("Could not get the parent box from builder.");
+
+    // Set application
+    window.set_application(Some(app));
+
+    // Connect to "clicked" signal
+    submit_button.connect_clicked(move |button| {
+        // Set the label to "Hello World!" after the button has been clicked on
+        // button.set_label("Hello World!");
+    });
+
+    // Add buttons
+    // list.append(&button);
+    // list.append(&button2);
+    // window.set_child(Some(&list));
+    window.present();
+}
+
 fn build_ui(app: &Application) {
-    // Init `gtk::Builder` from file
     let builder = gtk::Builder::from_string(include_str!("ui/main.ui"));
 
     // Get window and button from `gtk::Builder`

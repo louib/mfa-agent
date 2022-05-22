@@ -2,5 +2,6 @@
 <gresources>
     <gresource prefix="/net/louib/mfa-agent/">
       <file compressed="true" preprocess="xml-stripblanks">../keypad.ui</file>
+      <file compressed="true" preprocess="xml-stripblanks">../unlock.ui</file>
     </gresource>
 </gresources>
