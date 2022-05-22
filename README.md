@@ -7,3 +7,4 @@ Multi-Factor authentication agent for Linux.
 * https://github.com/diwic/dbus-rs#readme
 * https://gtk-rs.org/gtk4-rs/stable/latest/book/
 * https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax
+* The Comparison of Rust Keepass Libraries at https://crates.io/crates/kdbx-rs

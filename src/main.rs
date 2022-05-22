@@ -60,6 +60,13 @@ fn build_unlock_ui(app: &Application) {
         .object("window")
         .expect("Could not get object `window` from builder.");
 
+    let top_box: GtkBox = builder
+        .object("top_box")
+        .expect("Could not get the top box from builder.");
+    let bottom_box: GtkBox = builder
+        .object("bottom_box")
+        .expect("Could not get the bottom box from builder.");
+
     let password_label: Label = builder
         .object("label")
         .expect("Could not get the label field from builder.");
@@ -67,11 +74,8 @@ fn build_unlock_ui(app: &Application) {
     let peak_button: Button = builder
         .object("peak")
         .expect("Could not get the peak button from builder.");
-    let top_box: GtkBox = builder
-        .object("top_box")
-        .expect("Could not get the top box from builder.");
     top_box.append(&password_label);
-    top_box.append(&peak_button);
+    // top_box.append(&peak_button);
 
     let submit_button: Button = builder
         .object("submit")
@@ -80,23 +84,24 @@ fn build_unlock_ui(app: &Application) {
         .object("password")
         .expect("Could not get the password field from builder.");
     // Put the entry field in password mode.
-    password_field.set_visibility(false);
+    // password_field.set_visibility(false);
     password_field.set_width_chars(40);
-    let bottom_box: GtkBox = builder
-        .object("bottom_box")
-        .expect("Could not get the bottom box from builder.");
-    bottom_box.append(&password_field);
-    bottom_box.append(&submit_button);
+    // bottom_box.append(&submit_button);
+    // bottom_box.append(&password_field);
 
     let parent_box: GtkBox = builder
         .object("parent_box")
         .expect("Could not get the parent box from builder.");
+    //parent_box.append(&top_box);
+    //parent_box.append(&bottom_box);
 
     // Set application
     window.set_application(Some(app));
 
     // Connect to "clicked" signal
     submit_button.connect_clicked(move |button| {
+        let password = password_field.text();
+        println!("Wow, the password is {}.", &password);
         // Set the label to "Hello World!" after the button has been clicked on
         // button.set_label("Hello World!");
     });
