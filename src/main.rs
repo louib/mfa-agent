@@ -1,3 +1,4 @@
+#![recursion_limit = "256"]
 use std::error::Error;
 use std::time::Duration;
 
@@ -30,7 +31,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // if let Err(e) = gtk::init() {
-        // panic!("Failed to initialize GTK: {}", e);
+    // panic!("Failed to initialize GTK: {}", e);
     // }
 
     std::process::exit(run::<crate::numpad::NumPad>());
@@ -39,8 +40,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Create a new application
     //let app = Application::builder()
-        //.application_id(crate::consts::APP_ID)
-        //.build();
+    //.application_id(crate::consts::APP_ID)
+    //.build();
 
     // Connect to "activate" signal of `app`
     // app.connect_activate(build_ui);

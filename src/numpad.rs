@@ -40,6 +40,20 @@ impl Component for NumPad {
             <Application::new_unwrap(Some(crate::consts::APP_ID), ApplicationFlags::empty())>
                 <Window border_width=20 on destroy=|_| Message::Exit>
                     <Label label="{{project-name}}" />
+                    <Grid visible=true hexpand=false row_spacing=6 column_spacing=6 column_homogeneous=true row_homogeneous=true>
+                      <Button visible=true focus_on_click=false>
+                        <Label label="1" width_chars=1/>
+                      </Button>
+                      <Button visible=true focus_on_click=false>
+                        <Label label="2" width_chars=1/>
+                      </Button>
+                      <Button visible=true focus_on_click=false>
+                        <Label label="3" width_chars=1/>
+                      </Button>
+                      <Button visible=true focus_on_click=false>
+                        <Label label="4" width_chars=1/>
+                      </Button>
+                    </Grid>
                 </Window>
             </Application>
         }
