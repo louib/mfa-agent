@@ -30,9 +30,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         panic!("Failed to register resources: {}.", e);
     }
 
-    // if let Err(e) = gtk::init() {
-    // panic!("Failed to initialize GTK: {}", e);
-    // }
+    if let Err(e) = gtk::init() {
+        panic!("Failed to initialize GTK: {}", e);
+    }
 
     // std::process::exit(run::<crate::numpad::NumPad>());
 
