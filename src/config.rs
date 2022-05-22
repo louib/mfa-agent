@@ -9,9 +9,10 @@ pub const DEFAULT_CACHE_DIR: &str = "~/";
 pub const DEFAULT_CONFIG_FILE_NAME: &str = ".mfa-agent-config.yaml";
 
 #[derive(Deserialize, Serialize, Debug, Default)]
-#[serde(default)]
 pub struct Config {
-    pub agent_id: String,
+    pub agent_id: Option<String>,
+    pub default_db_path: Option<String>,
+    pub last_db_path: Option<String>,
 }
 
 pub fn write_config(config: &Config) -> Result<Config, String> {
@@ -41,10 +42,10 @@ pub fn write_config(config: &Config) -> Result<Config, String> {
         }
     };
 
-    read_config()
+    read()
 }
 
-pub fn read_config() -> Result<Config, String> {
+pub fn read() -> Result<Config, String> {
     // Make that more robust maybe?
     let config_path = DEFAULT_CACHE_DIR.to_owned() + DEFAULT_CONFIG_FILE_NAME;
     let config_path = path::Path::new(&config_path);
@@ -72,8 +73,8 @@ pub fn read_config() -> Result<Config, String> {
     Ok(config)
 }
 
-pub fn read_or_init_config() -> Result<Config, String> {
-    match read_config() {
+pub fn read_or_init() -> Result<Config, String> {
+    match read() {
         Ok(config) => Ok(config),
         Err(_) => match write_config(&Config::default()) {
             Ok(c) => return Ok(c),

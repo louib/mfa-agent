@@ -8,7 +8,7 @@ use futures::{pin_mut, stream::SelectAll, StreamExt};
 use gio::prelude::*;
 use gtk::prelude::WidgetExt;
 use gtk::prelude::*;
-use gtk::{Application, ApplicationWindow, Box as GtkBox, Button, Entry, Label, ListBox, Switch};
+use gtk::{Align, Application, ApplicationWindow, Box as GtkBox, Button, Entry, Label, ListBox, Switch};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     time::sleep,
@@ -37,6 +37,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // std::process::exit(run::<crate::numpad::NumPad>());
 
     // advertise().await?;
+    //
 
     // Create a new application
     let app = Application::builder()
@@ -62,6 +63,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn build_unlock_ui(app: &Application) {
+    let config = crate::config::read_or_init().expect("Could not load config.");
+
     let builder = gtk::Builder::from_string(include_str!("ui/unlock.ui"));
 
     // Get window and button from `gtk::Builder`
@@ -83,7 +86,16 @@ fn build_unlock_ui(app: &Application) {
     let peak_button: Button = builder
         .object("peak")
         .expect("Could not get the peak button from builder.");
-    password_label.set_text("Opening database at /path/to/db.kdbx");
+    peak_button.set_halign(Align::End);
+    peak_button.set_valign(Align::End);
+
+    if let Some(db_path) = config.default_db_path {
+        password_label.set_text(&format!("Opening database at {}", &db_path));
+    } else if let Some(db_path) = config.last_db_path {
+        password_label.set_text(&format!("Opening database at {}", &db_path));
+    } else {
+        password_label.set_text("Please select a database to open.");
+    }
     // top_box.append(&password_label);
     // top_box.append(&peak_button);
 
