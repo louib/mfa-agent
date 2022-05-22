@@ -29,24 +29,24 @@ async fn main() -> Result<(), Box<dyn Error>> {
         panic!("Failed to register resources: {}.", e);
     }
 
-    if let Err(e) = gtk::init() {
-        panic!("Failed to initialize GTK: {}", e);
-    }
+    // if let Err(e) = gtk::init() {
+        // panic!("Failed to initialize GTK: {}", e);
+    // }
 
-    // std::process::exit(run::<crate::numpad::NumPad>());
+    std::process::exit(run::<crate::numpad::NumPad>());
 
     // advertise().await?;
 
     // Create a new application
-    let app = Application::builder()
-        .application_id(crate::consts::APP_ID)
-        .build();
+    //let app = Application::builder()
+        //.application_id(crate::consts::APP_ID)
+        //.build();
 
     // Connect to "activate" signal of `app`
-    app.connect_activate(build_ui);
+    // app.connect_activate(build_ui);
 
     // Run the application
-    app.run();
+    // app.run();
 
     Ok(())
 }
