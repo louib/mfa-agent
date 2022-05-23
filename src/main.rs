@@ -62,7 +62,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //
     //
     if is_proxy() {
-        println!("Running as proxy mode!!!");
+        log::info!("Running as proxy mode!!!");
         tokio::spawn(crate::bluetooth::send_request_to_server(
             "allo mon ami!!!".as_bytes().to_vec(),
         ));
