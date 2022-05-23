@@ -24,7 +24,7 @@ struct MFAAgent {
     proxy: bool,
     /// Use a password prompt to unlock the database. This option does nothing
     /// when in proxy mode.
-    #[clap(long, short)]
+    #[clap(long)]
     password_prompt: bool,
 }
 
@@ -32,6 +32,7 @@ mod bluetooth;
 mod config;
 mod consts;
 mod logger;
+mod utils;
 // mod numpad;
 mod secrets;
 mod secrets_window;
@@ -63,7 +64,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         // Do not open a database when a proxy.
     } else {
+        let mut password: String = "".to_string();
         if args.password_prompt {
+            // FIXME we should disable terminal echo here!!!
+            password = crate::utils::read_line("Please enter your password:");
             // We prompt from the command line for the password.
             // This option is only available when started from the command line!
         }
