@@ -41,7 +41,7 @@ mod secrets_window;
 async fn main() -> Result<(), Box<dyn Error>> {
     logger::init();
 
-    let args = MFAAgent::parse();
+    // let args = MFAAgent::parse();
 
     if let Err(e) = gio::resources_register_include!("ui.gresource") {
         panic!("Failed to register resources: {}.", e);
@@ -56,7 +56,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // crate::bluetooth::advertise().await?;
     //
     //
-    if args.proxy {
+    // if args.proxy {
+    if true {
         println!("Running as proxy mode!!!");
         tokio::spawn(crate::bluetooth::send_request_to_server(
             "allo mon ami!!!".as_bytes().to_vec(),
@@ -65,7 +66,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         // Do not open a database when a proxy.
     } else {
         let mut password: String = "".to_string();
-        if args.password_prompt {
+        if true {
             // FIXME we should disable terminal echo here!!!
             password = crate::utils::read_line("Please enter your password:");
             // We prompt from the command line for the password.

@@ -23,7 +23,7 @@ pub async fn start_bt_server() -> bluer::Result<()> {
     let adapter = session.default_adapter().await?;
     adapter.set_powered(true).await?;
 
-    println!(
+    log::info!(
         "Advertising on Bluetooth adapter {} with address {}",
         adapter.name(),
         adapter.address().await?
@@ -36,7 +36,7 @@ pub async fn start_bt_server() -> bluer::Result<()> {
     };
     let adv_handle = adapter.advertise(le_advertisement).await?;
 
-    println!(
+    log::info!(
         "Serving GATT echo service on Bluetooth adapter {}",
         adapter.name()
     );
@@ -66,7 +66,7 @@ pub async fn start_bt_server() -> bluer::Result<()> {
     };
     let app_handle = adapter.serve_gatt_application(app).await?;
 
-    println!("Echo service ready. Press enter to quit.");
+    log::info!("Echo service ready. Press enter to quit.");
     let stdin = BufReader::new(tokio::io::stdin());
     let mut lines = stdin.lines();
 
@@ -110,12 +110,12 @@ pub async fn start_bt_server() -> bluer::Result<()> {
                             println!();
                         }
                         if let Err(err) = writer_opt.as_mut().unwrap().write_all(&value).await {
-                            println!("Write failed: {}", &err);
+                            log::error!("Write failed: {}", &err);
                             writer_opt = None;
                         }
                     }
                     Err(err) => {
-                        println!("Read stream error: {}", &err);
+                        log::error!("Read stream error: {}", &err);
                         reader_opt = None;
                     }
                 }
@@ -123,7 +123,7 @@ pub async fn start_bt_server() -> bluer::Result<()> {
         }
     }
 
-    println!("Removing service and advertisement");
+    log::info!("Removing service and advertisement");
     drop(app_handle);
     drop(adv_handle);
     sleep(Duration::from_secs(1)).await;
@@ -134,14 +134,19 @@ pub async fn start_bt_server() -> bluer::Result<()> {
 async fn find_our_characteristic(device: &Device) -> bluer::Result<Option<RemoteCharacteristic>> {
     let addr = device.address();
     let uuids = device.uuids().await?.unwrap_or_default();
-    println!("Discovered device {} with service UUIDs {:?}", addr, &uuids);
+    log::info!("Discovered device {} with service UUIDs {:?}", addr, &uuids);
+
     let md = device.manufacturer_data().await?;
-    println!("    Manufacturer data: {:x?}", &md);
+    log::debug!("Manufacturer data for {}: {:x?}", device.address(), &md);
 
     if uuids.contains(&crate::consts::APP_BT_SERVICE_ID) {
-        println!("    Device provides our service!");
+
+        // TODO this is a big event, it means this should now be a
+        // known device.
+        log::info!("Found device providing our service: {}.", device.address());
+
         if !device.is_connected().await? {
-            println!("    Connecting...");
+            log::debug!("Connecting to {}...", device.address());
             let mut retries = 2;
             loop {
                 match device.connect().await {
@@ -183,9 +188,9 @@ async fn find_our_characteristic(device: &Device) -> bluer::Result<Option<Remote
 
 async fn send_server_data(char: &bluer::gatt::remote::Characteristic, data: Vec<u8>) -> bluer::Result<()> {
     let mut write_io = char.write_io().await?;
-    println!("    Obtained write IO with MTU {} bytes", write_io.mtu());
+    log::debug!("    Obtained write IO with MTU {} bytes", write_io.mtu());
     let mut notify_io = char.notify_io().await?;
-    println!("    Obtained notification IO with MTU {} bytes", notify_io.mtu());
+    log::debug!("    Obtained notification IO with MTU {} bytes", notify_io.mtu());
 
     // Flush notify buffer.
     let mut buf = [0; 1024];
@@ -207,7 +212,7 @@ async fn send_server_data(char: &bluer::gatt::remote::Characteristic, data: Vec<
     // multiple writes of MTU size.
     write_io.write_all(&data).await.expect("write failed");
 
-    println!("    Waiting for echo");
+    log::debug!("Waiting for echo...");
     let (notify_io_back, res) = read_task.await.unwrap();
     notify_io = notify_io_back;
     let echo_buf = res.expect("read failed");
@@ -246,11 +251,12 @@ pub async fn send_request_to_server(data: Vec<u8>) -> bluer::Result<()> {
     adapter.set_powered(true).await?;
 
     {
-        println!(
+        log::info!(
             "Discovering on Bluetooth adapter {} with address {}\n",
             adapter.name(),
             adapter.address().await?
         );
+
         let discover = adapter.discover_devices().await?;
         pin_mut!(discover);
         let mut done = false;
