@@ -40,6 +40,23 @@
             <property name="margin-end">12</property>  
           </object>
         </child>
+        <child>
+          <object class="GtkEntry" id="search_text">
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>  
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="search_button">
+            <property name="label">Search that TOTP!</property>
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>  
+          </object>
+        </child>
       </object>
     </child>
   </object>

@@ -24,6 +24,7 @@ pub struct Config {
     pub agent_id: Option<String>,
     pub default_db_path: Option<String>,
     pub last_db_path: Option<String>,
+    pub known_server_address: Option<String>,
 }
 
 pub fn write_config(config: &Config) -> Result<Config, String> {

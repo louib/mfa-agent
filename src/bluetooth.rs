@@ -18,7 +18,7 @@ use tokio::{
     time::{sleep, timeout},
 };
 
-pub async fn start_bt_server() -> bluer::Result<()> {
+pub async fn start_server() -> bluer::Result<()> {
     let session = bluer::Session::new().await?;
     let adapter = session.default_adapter().await?;
     adapter.set_powered(true).await?;
@@ -140,7 +140,6 @@ async fn find_our_characteristic(device: &Device) -> bluer::Result<Option<Remote
     log::debug!("Manufacturer data for {}: {:x?}", device.address(), &md);
 
     if uuids.contains(&crate::consts::APP_BT_SERVICE_ID) {
-
         // TODO this is a big event, it means this should now be a
         // known device.
         log::info!("Found device providing our service: {}.", device.address());
@@ -152,18 +151,18 @@ async fn find_our_characteristic(device: &Device) -> bluer::Result<Option<Remote
                 match device.connect().await {
                     Ok(()) => break,
                     Err(err) if retries > 0 => {
-                        println!("    Connect error: {}", &err);
+                        log::error!("Connect error: {}", &err);
                         retries -= 1;
                     }
                     Err(err) => return Err(err),
                 }
             }
-            println!("    Connected");
+            log::info!("Connected to {}.", device.address());
         } else {
             println!("    Already connected");
         }
 
-        println!("    Enumerating services...");
+        log::debug!("Enumerating services...");
         for service in device.services().await? {
             let uuid = service.uuid().await?;
             println!("    Service UUID: {}", &uuid);
@@ -269,28 +268,27 @@ pub async fn send_request_to_server(data: Vec<u8>) -> bluer::Result<()> {
                             // FIXME should we really have to clone here?
                             match send_server_data(&char, data.clone()).await {
                                 Ok(()) => {
-                                    println!("    Characteristic exercise completed");
+                                    log::info!("Data was sent to the server. We are done.");
                                     done = true;
                                 }
                                 Err(err) => {
-                                    println!("    Characteristic exercise failed: {}", &err);
+                                    log::error!("Error while sending data to the server: {}", &err);
                                 }
                             }
                         }
                         Ok(None) => (),
                         Err(err) => {
-                            println!("    Device failed: {}", &err);
+                            log::error!("Device failed: {}", &err);
                             let _ = adapter.remove_device(device.address()).await;
                         }
                     }
                     match device.disconnect().await {
-                        Ok(()) => println!("    Device disconnected"),
-                        Err(err) => println!("    Device disconnection failed: {}", &err),
+                        Ok(()) => log::debug!("Device disconnected"),
+                        Err(err) => log::debug!("Device disconnection failed: {}", &err),
                     }
-                    println!();
                 }
                 AdapterEvent::DeviceRemoved(addr) => {
-                    println!("Device removed {}", addr);
+                    log::info!("Device removed {}", addr);
                 }
                 _ => (),
             }
@@ -298,7 +296,7 @@ pub async fn send_request_to_server(data: Vec<u8>) -> bluer::Result<()> {
                 break;
             }
         }
-        println!("Stopping discovery");
+        log::info!("Stopping discovery");
     }
 
     sleep(Duration::from_secs(1)).await;
