@@ -4,6 +4,7 @@ use std::time::Duration;
 
 use bluer::adv::Advertisement;
 use bluer::{Adapter, AdapterEvent, Address, DeviceEvent};
+use clap::{AppSettings, Parser, Subcommand};
 use futures::{pin_mut, stream::SelectAll, StreamExt};
 use gio::prelude::*;
 use gtk::prelude::WidgetExt;
@@ -14,6 +15,16 @@ use tokio::{
     time::sleep,
 };
 // use vgtk::run;
+//
+#[derive(Parser)]
+#[clap(name = crate::consts::APP_NAME)]
+#[clap(version = env!("CARGO_PKG_VERSION"))]
+#[clap(about = "Multi-Factor authentication agent for Linux.", long_about = None)]
+struct MFAAgent {
+    /// Run the agent as a proxy
+    #[clap(long, short)]
+    proxy: bool,
+}
 
 mod config;
 mod consts;
@@ -25,6 +36,8 @@ mod secrets_window;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     logger::init();
+
+    let args = MFAAgent::parse();
 
     if let Err(e) = gio::resources_register_include!("ui.gresource") {
         panic!("Failed to register resources: {}.", e);
@@ -38,6 +51,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // advertise().await?;
     //
+    //
+    if args.proxy {
+        println!("Running as proxy mode!!!");
+    }
 
     // Create a new application
     let app = Application::builder()

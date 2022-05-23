@@ -40,6 +40,9 @@ bluer = { version = "0.15", features = ["bluetoothd"] }
 
 futures = "0.3"
 
+clap = { version = "3", features = ["derive"] }
+uuid = { version = "1", features = ["v4"] }
+
 [build-dependencies]
 # Needed in the build dependencies to compile the gresources
 gtk = { version = "0.4", package = "gtk4" }
