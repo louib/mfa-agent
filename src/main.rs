@@ -1,4 +1,5 @@
 #![recursion_limit = "256"]
+use std::env;
 use std::error::Error;
 use std::time::Duration;
 
@@ -16,16 +17,13 @@ use tokio::{
 //
 #[derive(Parser)]
 #[clap(name = crate::consts::APP_NAME)]
+// #[clap(author = "louib")]
 #[clap(version = env!("CARGO_PKG_VERSION"))]
 #[clap(about = "Multi-Factor authentication agent for Linux.", long_about = None)]
 struct MFAAgent {
     /// Run the agent as a proxy
     #[clap(long, short)]
     proxy: bool,
-    /// Use a password prompt to unlock the database. This option does nothing
-    /// when in proxy mode.
-    #[clap(long)]
-    password_prompt: bool,
 }
 
 mod bluetooth;
@@ -36,6 +34,13 @@ mod utils;
 // mod numpad;
 mod secrets;
 mod secrets_window;
+
+fn is_proxy() -> bool {
+    match env::var("MFA_AGENT_IS_PROXY") {
+        Ok(v) => v == "true",
+        Err(_) => false,
+    }
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -56,8 +61,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // crate::bluetooth::advertise().await?;
     //
     //
-    // if args.proxy {
-    if true {
+    if is_proxy() {
         println!("Running as proxy mode!!!");
         tokio::spawn(crate::bluetooth::send_request_to_server(
             "allo mon ami!!!".as_bytes().to_vec(),
