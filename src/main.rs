@@ -29,6 +29,7 @@ struct MFAAgent {
 mod config;
 mod consts;
 mod logger;
+mod bt_server;
 // mod numpad;
 mod secrets;
 mod secrets_window;
