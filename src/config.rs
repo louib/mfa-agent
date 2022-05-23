@@ -1,12 +1,19 @@
+use std::env;
 use std::fs;
 use std::path;
 
 use serde::{Deserialize, Serialize};
 
-// FIXME this should not rely on the `~` char and should
-// be placed in an app-specific, xdg compliant location
-pub const DEFAULT_CACHE_DIR: &str = "~/";
+pub fn get_cache_dir() -> String {
+    // TODO should be placed in an app-specific, xdg compliant location
+    match env::home_dir() {
+        Some(p) => p.display().to_string(),
+        None => "./".to_string(),
+    }
+}
+
 pub const DEFAULT_CONFIG_FILE_NAME: &str = ".mfa-agent-config.yaml";
+pub const DEFAULT_DB_FILE_NAME: &str = ".mfa-agent-config.yaml";
 
 #[derive(Deserialize, Serialize, Debug, Default)]
 pub struct Config {
@@ -16,7 +23,8 @@ pub struct Config {
 }
 
 pub fn write_config(config: &Config) -> Result<Config, String> {
-    let cache_dir = path::Path::new(DEFAULT_CACHE_DIR);
+    let cache_dir = get_cache_dir();
+    let cache_dir = path::Path::new(&cache_dir);
     if !cache_dir.is_dir() {
         match fs::create_dir(cache_dir) {
             Ok(_) => {}
@@ -29,7 +37,7 @@ pub fn write_config(config: &Config) -> Result<Config, String> {
         Err(e) => return Err(format!("Failed to dump the config {}", e)),
     };
 
-    let config_path = DEFAULT_CACHE_DIR.to_owned() + DEFAULT_CONFIG_FILE_NAME;
+    let config_path = get_cache_dir().to_owned() + DEFAULT_CONFIG_FILE_NAME;
     let config_path = path::Path::new(&config_path);
     match fs::write(config_path, config_content) {
         Ok(m) => m,
@@ -47,7 +55,7 @@ pub fn write_config(config: &Config) -> Result<Config, String> {
 
 pub fn read() -> Result<Config, String> {
     // Make that more robust maybe?
-    let config_path = DEFAULT_CACHE_DIR.to_owned() + DEFAULT_CONFIG_FILE_NAME;
+    let config_path = get_cache_dir().to_owned() + DEFAULT_CONFIG_FILE_NAME;
     let config_path = path::Path::new(&config_path);
     let config_content = match fs::read_to_string(config_path) {
         Ok(m) => m,
