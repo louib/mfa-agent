@@ -100,12 +100,12 @@ pub async fn start_server() -> bluer::Result<()> {
             } => {
                 match read_res {
                     Ok(0) => {
-                        println!("Read stream ended");
+                        log::debug!("Read stream ended");
                         reader_opt = None;
                     }
                     Ok(n) => {
                         let value = read_buf[..n].to_vec();
-                        println!("Echoing {} bytes: {:x?} ... {:x?}", value.len(), &value[0..4.min(value.len())], &value[value.len().saturating_sub(4) ..]);
+                        log::info!("Echoing {} bytes: {:x?} ... {:x?}", value.len(), &value[0..4.min(value.len())], &value[value.len().saturating_sub(4) ..]);
                         if value.len() < 512 {
                             println!();
                         }
@@ -131,7 +131,7 @@ pub async fn start_server() -> bluer::Result<()> {
     Ok(())
 }
 
-async fn find_our_characteristic(device: &Device) -> bluer::Result<Option<RemoteCharacteristic>> {
+async fn find_characteristic(device: &Device) -> bluer::Result<Option<RemoteCharacteristic>> {
     let addr = device.address();
     let uuids = device.uuids().await?.unwrap_or_default();
     log::info!("Discovered device {} with service UUIDs {:?}", addr, &uuids);
@@ -263,7 +263,7 @@ pub async fn send_request_to_server(data: Vec<u8>) -> bluer::Result<()> {
             match evt {
                 AdapterEvent::DeviceAdded(addr) => {
                     let device = adapter.device(addr)?;
-                    match find_our_characteristic(&device).await {
+                    match find_characteristic(&device).await {
                         Ok(Some(char)) => {
                             // FIXME should we really have to clone here?
                             match send_server_data(&char, data.clone()).await {
