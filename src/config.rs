@@ -8,12 +8,16 @@ pub fn get_cache_dir() -> String {
     // TODO should be placed in an app-specific, xdg compliant location
     match env::home_dir() {
         Some(p) => p.display().to_string(),
-        None => "./".to_string(),
+        None => ".".to_string(),
     }
 }
 
+pub fn get_config_file_path() -> String {
+    get_cache_dir().to_owned() + "/" + DEFAULT_CONFIG_FILE_NAME
+}
+
 pub const DEFAULT_CONFIG_FILE_NAME: &str = ".mfa-agent-config.yaml";
-pub const DEFAULT_DB_FILE_NAME: &str = ".mfa-agent-config.yaml";
+pub const DEFAULT_DB_FILE_NAME: &str = "mfa-agent.kdbx";
 
 #[derive(Deserialize, Serialize, Debug, Default)]
 pub struct Config {
@@ -37,7 +41,7 @@ pub fn write_config(config: &Config) -> Result<Config, String> {
         Err(e) => return Err(format!("Failed to dump the config {}", e)),
     };
 
-    let config_path = get_cache_dir().to_owned() + DEFAULT_CONFIG_FILE_NAME;
+    let config_path = get_config_file_path();
     let config_path = path::Path::new(&config_path);
     match fs::write(config_path, config_content) {
         Ok(m) => m,
@@ -54,8 +58,7 @@ pub fn write_config(config: &Config) -> Result<Config, String> {
 }
 
 pub fn read() -> Result<Config, String> {
-    // Make that more robust maybe?
-    let config_path = get_cache_dir().to_owned() + DEFAULT_CONFIG_FILE_NAME;
+    let config_path = get_config_file_path();
     let config_path = path::Path::new(&config_path);
     let config_content = match fs::read_to_string(config_path) {
         Ok(m) => m,
