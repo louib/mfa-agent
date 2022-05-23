@@ -26,7 +26,7 @@ struct MFAAgent {
     proxy: bool,
 }
 
-mod bt_server;
+mod bluetooth;
 mod config;
 mod consts;
 mod logger;
@@ -55,8 +55,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //
     if args.proxy {
         println!("Running as proxy mode!!!");
+        tokio::spawn(crate::bluetooth::send_request_to_server(
+            "allo mon ami!!!".as_bytes().to_vec(),
+        ));
     } else {
-        tokio::spawn(crate::bt_server::start_bt_server());
+        println!("Running as remote client mode!!!");
+        tokio::spawn(crate::bluetooth::start_bt_server());
     }
 
     // Create a new application
