@@ -22,6 +22,10 @@ struct MFAAgent {
     /// Run the agent as a proxy
     #[clap(long, short)]
     proxy: bool,
+    /// Use a password prompt to unlock the database. This option does nothing
+    /// when in proxy mode.
+    #[clap(long, short)]
+    password_prompt: bool,
 }
 
 mod bluetooth;
@@ -56,7 +60,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
         tokio::spawn(crate::bluetooth::send_request_to_server(
             "allo mon ami!!!".as_bytes().to_vec(),
         ));
+
+        // Do not open a database when a proxy.
     } else {
+        if args.password_prompt {
+            // We prompt from the command line for the password.
+            // This option is only available when started from the command line!
+        }
+
+        // Else, we build the unlock UI and unlock with a UI!.
+
         println!("Running as remote client mode!!!");
         tokio::spawn(crate::bluetooth::start_bt_server());
     }
