@@ -16,13 +16,16 @@ use tokio::{
     time::sleep,
 };
 
-
-async fn start_bt_server() -> bluer::Result<()> {
+pub async fn start_bt_server() -> bluer::Result<()> {
     let session = bluer::Session::new().await?;
     let adapter = session.default_adapter().await?;
     adapter.set_powered(true).await?;
 
-    println!("Advertising on Bluetooth adapter {} with address {}", adapter.name(), adapter.address().await?);
+    println!(
+        "Advertising on Bluetooth adapter {} with address {}",
+        adapter.name(),
+        adapter.address().await?
+    );
     let le_advertisement = Advertisement {
         service_uuids: vec![crate::consts::APP_BT_SERVICE_ID].into_iter().collect(),
         discoverable: Some(true),
@@ -31,7 +34,10 @@ async fn start_bt_server() -> bluer::Result<()> {
     };
     let adv_handle = adapter.advertise(le_advertisement).await?;
 
-    println!("Serving GATT echo service on Bluetooth adapter {}", adapter.name());
+    println!(
+        "Serving GATT echo service on Bluetooth adapter {}",
+        adapter.name()
+    );
     let (char_control, char_handle) = characteristic_control();
     let app = Application {
         services: vec![Service {

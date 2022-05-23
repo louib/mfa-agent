@@ -26,10 +26,10 @@ struct MFAAgent {
     proxy: bool,
 }
 
+mod bt_server;
 mod config;
 mod consts;
 mod logger;
-mod bt_server;
 // mod numpad;
 mod secrets;
 mod secrets_window;
@@ -55,6 +55,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //
     if args.proxy {
         println!("Running as proxy mode!!!");
+    } else {
+        tokio::spawn(crate::bt_server::start_bt_server());
     }
 
     // Create a new application
@@ -63,7 +65,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .build();
 
     // Connect to "activate" signal of `app`
-    app.connect_activate(build_unlock_ui);
+    // app.connect_activate(build_unlock_ui);
+    app.connect_activate(build_main_ui);
 
     let quit = gio::SimpleAction::new("quit", None);
     quit.connect_activate(glib::clone!(@weak app => move |_action, _parameter| {
@@ -158,7 +161,7 @@ fn build_unlock_ui(app: &Application) {
     window.present();
 }
 
-fn build_ui(app: &Application) {
+fn build_main_ui(app: &Application) {
     let builder = gtk::Builder::from_string(include_str!("ui/main.ui"));
 
     // Get window and button from `gtk::Builder`
@@ -174,6 +177,10 @@ fn build_ui(app: &Application) {
     let button2: Button = builder
         .object("button_2")
         .expect("Could not get object `button` from builder.");
+    let label: Label = builder
+        .object("label")
+        .expect("Could not get the label object from builder.");
+    label.set_text("Would you accept request for XXXXXXXXXXX");
 
     // Set application
     window.set_application(Some(app));
@@ -185,8 +192,6 @@ fn build_ui(app: &Application) {
     });
 
     // Add buttons
-    list.append(&button);
-    list.append(&button2);
     window.set_child(Some(&list));
     window.present();
 }
