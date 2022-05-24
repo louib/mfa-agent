@@ -207,9 +207,9 @@ async fn send_server_data(char: &bluer::gatt::remote::Characteristic, data: Vec<
 
     // Note that write_all will automatically split the buffer into
     // multiple writes of MTU size.
-    write_io.write_all(&data).await.expect("write failed");
-
+    write_io.write_all(&data).await?;
     log::debug!("Waiting for echo...");
+
     let (notify_io_back, res) = read_task.await.unwrap();
     notify_io = notify_io_back;
     let echo_buf = res.expect("read failed");
