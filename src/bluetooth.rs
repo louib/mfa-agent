@@ -137,9 +137,6 @@ async fn find_characteristic(device: &Device) -> bluer::Result<Option<RemoteChar
     let uuids = device.uuids().await?.unwrap_or_default();
     log::info!("Discovered device {} with service UUIDs {:?}", addr, &uuids);
 
-    let md = device.manufacturer_data().await?;
-    log::debug!("Manufacturer data for {}: {:x?}", device.address(), &md);
-
     if !uuids.contains(&crate::consts::APP_BT_SERVICE_ID) {
         log::debug!("Device does not contain our service.");
         return Ok(None);
