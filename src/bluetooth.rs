@@ -31,13 +31,13 @@ pub async fn start_server() -> bluer::Result<()> {
     let le_advertisement = Advertisement {
         service_uuids: vec![crate::consts::APP_BT_SERVICE_ID].into_iter().collect(),
         discoverable: Some(true),
-        local_name: Some("gatt_echo_server".to_string()),
+        local_name: Some("mfa-agent (remote)".to_string()),
         ..Default::default()
     };
     let adv_handle = adapter.advertise(le_advertisement).await?;
 
     log::info!(
-        "Serving GATT echo service on Bluetooth adapter {}",
+        "Starting mfa-agent remote server on Bluetooth adapter {}",
         adapter.name()
     );
     let (char_control, char_handle) = characteristic_control();

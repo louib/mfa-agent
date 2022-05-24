@@ -72,7 +72,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         let mut password: String = "".to_string();
         if true {
             // FIXME we should disable terminal echo here!!!
-            password = crate::utils::read_line("Please enter your password:");
+            // password = crate::utils::read_line("Please enter your password:");
             // We prompt from the command line for the password.
             // This option is only available when started from the command line!
         }
