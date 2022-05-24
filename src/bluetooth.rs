@@ -137,9 +137,6 @@ async fn find_characteristic(device: &Device) -> bluer::Result<Option<RemoteChar
     let uuids = device.uuids().await?.unwrap_or_default();
     log::info!("Discovered device {} with service UUIDs {:?}", addr, &uuids);
 
-    let services = device.services().await?;
-    log::info!("Device has {} service(s)", services.len());
-
     let md = device.manufacturer_data().await?;
     log::debug!("Manufacturer data for {}: {:x?}", device.address(), &md);
 
@@ -152,12 +149,13 @@ async fn find_characteristic(device: &Device) -> bluer::Result<Option<RemoteChar
 
     if !device.is_connected().await? {
         log::debug!("Connecting to {}...", device.address());
-        let mut retries = 2;
+        // TODO make this value configurable by env var.
+        let mut retries = 5;
         loop {
             match device.connect().await {
                 Ok(()) => break,
                 Err(err) if retries > 0 => {
-                    log::error!("Connect error: {}", &err);
+                    log::warn!("Connect error: {}", &err);
                     retries -= 1;
                 }
                 Err(err) => return Err(err),
@@ -169,7 +167,7 @@ async fn find_characteristic(device: &Device) -> bluer::Result<Option<RemoteChar
     }
 
     log::debug!("Enumerating services...");
-    for service in services {
+    for service in device.services().await? {
         let uuid = service.uuid().await?;
         if uuid != crate::consts::APP_BT_SERVICE_ID {
             continue;
