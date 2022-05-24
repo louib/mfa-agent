@@ -18,6 +18,16 @@ use tokio::{
     time::{sleep, timeout},
 };
 
+pub struct Message {
+    op: i8,
+    id: i64,
+    args: Vec<String>,
+}
+
+pub struct Response {
+    id: i64,
+}
+
 pub async fn start_server() -> bluer::Result<()> {
     let session = bluer::Session::new().await?;
     let adapter = session.default_adapter().await?;
@@ -106,10 +116,7 @@ pub async fn start_server() -> bluer::Result<()> {
                     }
                     Ok(n) => {
                         let value = read_buf[..n].to_vec();
-                        log::info!("Echoing {} bytes: {:x?} ... {:x?}", value.len(), &value[0..4.min(value.len())], &value[value.len().saturating_sub(4) ..]);
-                        if value.len() < 512 {
-                            println!();
-                        }
+                        log::info!("Echoing {} bytes.", n);
                         if let Err(err) = writer_opt.as_mut().unwrap().write_all(&value).await {
                             log::error!("Write failed: {}", &err);
                             writer_opt = None;
