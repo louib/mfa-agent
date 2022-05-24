@@ -220,11 +220,6 @@ fn build_main_ui(app: &Application) {
     window.present();
 }
 
-pub struct BluetoothDevice {
-    pub address: String,
-    pub name: Option<String>,
-}
-
 pub enum ApplicationEvent {
     AddKnownDevice(String),
     PairWithDevice(String),

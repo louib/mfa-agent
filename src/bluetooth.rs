@@ -18,14 +18,22 @@ use tokio::{
     time::{sleep, timeout},
 };
 
-pub struct Message {
-    op: i8,
-    id: i64,
-    args: Vec<String>,
+pub struct BluetoothDevice {
+    pub address: String,
+    pub name: Option<String>,
 }
 
-pub struct Response {
-    id: i64,
+pub struct SearchRequest {
+    term: String,
+}
+pub struct SearchResponse {
+    term: String,
+}
+pub struct HMACRequest {
+    secretId: String,
+}
+pub struct HMACResponse {
+    secretId: String,
 }
 
 pub async fn start_server() -> bluer::Result<()> {
@@ -92,15 +100,18 @@ pub async fn start_server() -> bluer::Result<()> {
             evt = char_control.next() => {
                 match evt {
                     Some(CharacteristicControlEvent::Write(req)) => {
-                        println!("Accepting write request event with MTU {}", req.mtu());
+                        log::debug!("Received new write request with MTU {}", req.mtu());
                         read_buf = vec![0; req.mtu()];
                         reader_opt = Some(req.accept()?);
                     },
                     Some(CharacteristicControlEvent::Notify(notifier)) => {
-                        println!("Accepting notify request event with MTU {}", notifier.mtu());
+                        log::debug!("Received new notify request with MTU {}", notifier.mtu());
                         writer_opt = Some(notifier);
                     },
-                    None => break,
+                    None => {
+                        log::debug!("No more requests to handle.");
+                        break;
+                    },
                 }
             },
             read_res = async {
@@ -218,7 +229,7 @@ async fn send_server_data(char: &bluer::gatt::remote::Characteristic, data: Vec<
     write_io.write_all(&data).await?;
     log::debug!("Waiting for echo...");
 
-    let (notify_io_back, res) = read_task.await.unwrap();
+    let (notify_io_back, res) = read_task.await?;
     notify_io = notify_io_back;
     let echo_buf = res.expect("read failed");
 
