@@ -62,7 +62,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //
     //
     if is_proxy() {
-        log::info!("Running as proxy mode!!!");
+        log::info!("Running in proxy mode!");
         tokio::spawn(crate::bluetooth::send_request_to_server(
             "allo mon ami!!!".as_bytes().to_vec(),
         ));
@@ -79,7 +79,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         // Else, we build the unlock UI and unlock with a UI!.
 
-        log::info!("Running as remote client mode!!!");
+        log::info!("Running in remote agent mode!");
         tokio::spawn(crate::bluetooth::start_server());
     }
 
