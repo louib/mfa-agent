@@ -7,6 +7,7 @@ Multi-Factor authentication agent for Linux.
 * https://docs.gtk.org/gtk4/class.Widget.html
 * https://github.com/gtk-rs/gtk3-rs/tree/master/examples
 * https://github.com/bluez/bluer/tree/master/bluer/examples
+* https://docs.rs/bluer/0.15.0/bluer/
 * https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/
 * https://github.com/diwic/dbus-rs#readme
 * https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax

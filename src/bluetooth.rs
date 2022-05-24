@@ -47,6 +47,7 @@ pub async fn start_server() -> bluer::Result<()> {
             primary: true,
             characteristics: vec![LocalCharacteristic {
                 uuid: crate::consts::APP_BT_CHARACTERISTIC_ID,
+                authorize: true,
                 write: Some(CharacteristicWrite {
                     write_without_response: true,
                     method: CharacteristicWriteMethod::Io,
