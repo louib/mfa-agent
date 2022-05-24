@@ -137,53 +137,55 @@ async fn find_characteristic(device: &Device) -> bluer::Result<Option<RemoteChar
     let uuids = device.uuids().await?.unwrap_or_default();
     log::info!("Discovered device {} with service UUIDs {:?}", addr, &uuids);
 
+    let services = device.services().await?;
+    log::info!("Device has {} service(s)", services.len());
+
     let md = device.manufacturer_data().await?;
     log::debug!("Manufacturer data for {}: {:x?}", device.address(), &md);
 
-    if uuids.contains(&crate::consts::APP_BT_SERVICE_ID) {
-        // TODO this is a big event, it means this should now be a
-        // known device.
-        log::info!("Found device providing our service: {}.", device.address());
-
-        if !device.is_connected().await? {
-            log::debug!("Connecting to {}...", device.address());
-            let mut retries = 2;
-            loop {
-                match device.connect().await {
-                    Ok(()) => break,
-                    Err(err) if retries > 0 => {
-                        log::error!("Connect error: {}", &err);
-                        retries -= 1;
-                    }
-                    Err(err) => return Err(err),
-                }
-            }
-            log::info!("Connected to {}.", device.address());
-        } else {
-            println!("    Already connected");
-        }
-
-        log::debug!("Enumerating services...");
-        for service in device.services().await? {
-            let uuid = service.uuid().await?;
-            println!("    Service UUID: {}", &uuid);
-            if uuid == crate::consts::APP_BT_SERVICE_ID {
-                println!("    Found our service!");
-                for char in service.characteristics().await? {
-                    let uuid = char.uuid().await?;
-                    println!("    Characteristic UUID: {}", &uuid);
-                    if uuid == crate::consts::APP_BT_CHARACTERISTIC_ID {
-                        println!("    Found our characteristic!");
-                        return Ok(Some(char));
-                    }
-                }
-            }
-        }
-
-        println!("    Not found!");
+    if !uuids.contains(&crate::consts::APP_BT_SERVICE_ID) {
+        log::debug!("Device does not contain our service.");
+        return Ok(None);
     }
 
-    Ok(None)
+    log::info!("Found device providing our service: {}.", device.address());
+
+    if !device.is_connected().await? {
+        log::debug!("Connecting to {}...", device.address());
+        let mut retries = 2;
+        loop {
+            match device.connect().await {
+                Ok(()) => break,
+                Err(err) if retries > 0 => {
+                    log::error!("Connect error: {}", &err);
+                    retries -= 1;
+                }
+                Err(err) => return Err(err),
+            }
+        }
+        log::info!("Connected to {}.", device.address());
+    } else {
+        log::debug!("Device is already connected.");
+    }
+
+    log::debug!("Enumerating services...");
+    for service in services {
+        let uuid = service.uuid().await?;
+        if uuid != crate::consts::APP_BT_SERVICE_ID {
+            continue;
+        }
+
+        log::info!("We found our service in device {}.", device.address());
+        for char in service.characteristics().await? {
+            let uuid = char.uuid().await?;
+            if uuid == crate::consts::APP_BT_CHARACTERISTIC_ID {
+                return Ok(Some(char));
+            }
+        }
+    }
+
+    // This should never happen.
+    panic!("Could not find characteristic on device {}", device.address());
 }
 
 async fn send_server_data(char: &bluer::gatt::remote::Characteristic, data: Vec<u8>) -> bluer::Result<()> {
