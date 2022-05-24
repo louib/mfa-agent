@@ -66,7 +66,7 @@ pub async fn start_server() -> bluer::Result<()> {
     };
     let app_handle = adapter.serve_gatt_application(app).await?;
 
-    log::info!("Echo service ready. Press enter to quit.");
+    log::info!("Service is ready. Press enter to quit.");
     let stdin = BufReader::new(tokio::io::stdin());
     let mut lines = stdin.lines();
 
@@ -127,6 +127,7 @@ pub async fn start_server() -> bluer::Result<()> {
     drop(app_handle);
     drop(adv_handle);
     sleep(Duration::from_secs(1)).await;
+    log::info!("Service and advertisement were removed.");
 
     Ok(())
 }
