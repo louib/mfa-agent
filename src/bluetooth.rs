@@ -124,6 +124,7 @@ pub async fn start_server() -> bluer::Result<()> {
                     Ok(0) => {
                         log::debug!("Read stream ended");
                         reader_opt = None;
+                        break;
                     }
                     Ok(n) => {
                         let value = read_buf[..n].to_vec();

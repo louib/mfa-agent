@@ -79,7 +79,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         // Else, we build the unlock UI and unlock with a UI!.
 
-        println!("Running as remote client mode!!!");
+        log::info!("Running as remote client mode!!!");
         tokio::spawn(crate::bluetooth::start_server());
     }
 
