@@ -233,6 +233,9 @@ fn build_main_ui(app: &Application) {
     let button2: Button = builder
         .object("button_2")
         .expect("Could not get object `button` from builder.");
+    let search_entry: Entry = builder
+        .object("search_entry")
+        .expect("Could not get object `search_entry` from builder.");
     let label: Label = builder
         .object("label")
         .expect("Could not get the label object from builder.");
@@ -240,6 +243,17 @@ fn build_main_ui(app: &Application) {
 
     // Set application
     window.set_application(Some(app));
+
+    // Connect to "clicked" signal
+    button.connect_clicked(move |button| {
+        // Set the label to "Hello World!" after the button has been clicked on
+        button.set_label("Hello World!");
+    });
+
+    search_entry.connect_activate(move |entry| {
+        let text = entry.text();
+        log::debug!("Got a query for text {}.", text);
+    });
 
     // Connect to "clicked" signal
     button.connect_clicked(move |button| {
