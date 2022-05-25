@@ -32,7 +32,9 @@ pub async fn start_server() -> Result<(), String> {
     for stream in listener.incoming().next().await {
         let stream = stream.unwrap();
 
-        println!("Connection established!");
+        log::debug!("TCP connection opened from {}", stream.peer_addr().unwrap());
+
+        // call stream.read_to_string()
     }
     Ok(())
 }
