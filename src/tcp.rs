@@ -30,11 +30,15 @@ pub async fn start_server() -> Result<(), String> {
     };
 
     for stream in listener.incoming().next().await {
-        let stream = stream.unwrap();
+        let mut stream = stream.unwrap();
 
         log::debug!("TCP connection opened from {}", stream.peer_addr().unwrap());
 
-        // call stream.read_to_string()
+        // TODO call stream.read_to_string() instead?
+        let mut buffer = [0; 1024];
+        stream.read(&mut buffer).await.unwrap();
+
+        println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
     }
     Ok(())
 }
