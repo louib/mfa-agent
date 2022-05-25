@@ -5,6 +5,7 @@ Multi-Factor authentication agent for Linux.
 * https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/#structs
 * https://gtk-rs.org/gtk4-rs/stable/latest/book/
 * https://docs.gtk.org/gtk4/class.Widget.html
+* https://docs.rs/crate/async-std/latest
 * https://github.com/gtk-rs/gtk3-rs/tree/master/examples
 * https://github.com/bluez/bluer/tree/master/bluer/examples
 * https://docs.rs/bluer/0.15.0/bluer/
