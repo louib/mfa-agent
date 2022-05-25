@@ -21,7 +21,7 @@ async fn send_data(data: Vec<u8>) -> Result<(), String> {
     Ok(())
 }
 
-async fn start_server() -> Result<(), String> {
+pub async fn start_server() -> Result<(), String> {
     // TODO make the port parameterable.
     let listener = match TcpListener::bind(PROXY_LOCALHOST_ADDRESS).await {
         Ok(l) => l,

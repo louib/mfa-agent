@@ -27,6 +27,7 @@ struct MFAAgent {
 }
 
 mod bluetooth;
+mod connection;
 mod config;
 mod consts;
 mod logger;
@@ -40,6 +41,13 @@ fn is_proxy() -> bool {
     match env::var("MFA_AGENT_IS_PROXY") {
         Ok(v) => v == "true",
         Err(_) => false,
+    }
+}
+
+fn get_connection_type() -> crate::connection::ConnectionType {
+    match env::var("MFA_CONNECTION_TYPE") {
+        Ok(v) => crate::connection::ConnectionType::from_string(&v).unwrap(),
+        Err(_) => crate::connection::ConnectionType::Tcp,
     }
 }
 
@@ -81,7 +89,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         // Else, we build the unlock UI and unlock with a UI!.
 
         log::info!("Running in remote agent mode!");
-        tokio::spawn(crate::bluetooth::start_server());
+        tokio::spawn(crate::tcp::start_server());
+        // tokio::spawn(crate::bluetooth::start_server());
     }
 
     // Create a new application
