@@ -30,6 +30,7 @@ mod bluetooth;
 mod config;
 mod consts;
 mod logger;
+mod tcp;
 mod utils;
 // mod numpad;
 mod secrets;
