@@ -266,6 +266,7 @@ fn build_main_ui(app: &Application) {
     search_entry.connect_activate(move |entry| {
         let text = entry.text();
         log::debug!("Got a query for text {}.", text);
+        // TODO send the request to the server!!!
     });
 
     // Connect to "clicked" signal
