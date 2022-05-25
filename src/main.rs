@@ -27,8 +27,8 @@ struct MFAAgent {
 }
 
 mod bluetooth;
-mod connection;
 mod config;
+mod connection;
 mod consts;
 mod logger;
 mod tcp;
