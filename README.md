@@ -1,6 +1,13 @@
 # MFA-Agent
 Multi-Factor authentication agent for Linux.
 
+Currently supports the following connection types between the proxy and the agent:
+* TCP
+
+In progress:
+* Bluetooth
+* Usb
+
 ## References
 * https://gtk-rs.org/gtk3-rs/stable/latest/docs/gtk/#structs
 * https://gtk-rs.org/gtk4-rs/stable/latest/book/

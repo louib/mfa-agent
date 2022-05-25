@@ -65,6 +65,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         panic!("Failed to initialize GTK: {}", e);
     }
 
+    let connection_type = get_connection_type();
+
     // std::process::exit(run::<crate::numpad::NumPad>());
 
     // crate::bluetooth::advertise().await?;
@@ -89,8 +91,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
         // Else, we build the unlock UI and unlock with a UI!.
 
         log::info!("Running in remote agent mode!");
-        tokio::spawn(crate::tcp::start_server());
-        // tokio::spawn(crate::bluetooth::start_server());
+        match connection_type {
+            crate::connection::ConnectionType::Bluetooth => {
+                tokio::spawn(crate::bluetooth::start_server());
+            }
+            crate::connection::ConnectionType::Tcp => {
+                tokio::spawn(crate::tcp::start_server());
+            }
+            crate::connection::ConnectionType::Usb => {
+                // TODO not implemented yet.
+            }
+        }
     }
 
     // Create a new application
