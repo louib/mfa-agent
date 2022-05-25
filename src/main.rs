@@ -38,14 +38,14 @@ mod secrets;
 mod secrets_window;
 
 fn is_proxy() -> bool {
-    match env::var("MFA_AGENT_IS_PROXY") {
+    match env::var(crate::consts::IS_PROXY_VAR_NAME) {
         Ok(v) => v == "true",
         Err(_) => false,
     }
 }
 
 fn get_connection_type() -> crate::connection::ConnectionType {
-    match env::var("MFA_AGENT_CONNECTION_TYPE") {
+    match env::var(crate::consts::CONNECTION_TYPE_VAR_NAME) {
         Ok(v) => crate::connection::ConnectionType::from_string(&v).unwrap(),
         Err(_) => crate::connection::ConnectionType::Tcp,
     }
