@@ -45,7 +45,7 @@ fn is_proxy() -> bool {
 }
 
 fn get_connection_type() -> crate::connection::ConnectionType {
-    match env::var("MFA_CONNECTION_TYPE") {
+    match env::var("MFA_AGENT_CONNECTION_TYPE") {
         Ok(v) => crate::connection::ConnectionType::from_string(&v).unwrap(),
         Err(_) => crate::connection::ConnectionType::Tcp,
     }
