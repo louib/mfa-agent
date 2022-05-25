@@ -1,6 +1,6 @@
-use std::io::prelude::*;
 use async_std::net::{TcpListener, TcpStream};
 use async_std::prelude::*;
+use std::io::prelude::*;
 
 static PROXY_LOCALHOST_ADDRESS: &str = "127.0.0.1:34372";
 pub const BUFFER_SIZE: usize = 1024;
@@ -11,7 +11,7 @@ pub async fn search(text: String) -> Result<Vec<u8>, String> {
 
     let payload = text.as_str().as_bytes().to_vec();
     for i in 1..payload.len() {
-        data[i] = payload[i-1];
+        data[i] = payload[i - 1];
     }
 
     send_data(data).await
@@ -54,7 +54,11 @@ pub async fn start_server() -> Result<(), String> {
 
         let operation_type = crate::api::OperationType::from_byte(buffer[0]);
 
-        println!("Request: {:?} {}", operation_type, String::from_utf8_lossy(&buffer[..]));
+        println!(
+            "Request: {:?} {}",
+            operation_type,
+            String::from_utf8_lossy(&buffer[..])
+        );
     }
     Ok(())
 }

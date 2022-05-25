@@ -26,13 +26,13 @@ struct MFAAgent {
     proxy: bool,
 }
 
+mod api;
 mod bluetooth;
 mod config;
 mod connection;
 mod consts;
 mod logger;
 mod tcp;
-mod api;
 mod utils;
 // mod numpad;
 mod secrets;
