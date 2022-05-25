@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <object class="GtkApplicationWindow" id="window">
-    <property name="title">mfa-agent</property>
     <property name="default-width">450</property>
     <child>
       <object class="GtkBox" id="parent_box">

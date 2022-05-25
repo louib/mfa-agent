@@ -44,6 +44,16 @@ fn is_proxy() -> bool {
     }
 }
 
+fn get_window_title() -> String {
+    let mut app_title = crate::consts::APP_NAME.to_owned() + " ";
+    if is_proxy() {
+        app_title += crate::consts::PROXY_TITLE_SUFFIX;
+    } else {
+        app_title += crate::consts::AGENT_TITLE_SUFFIX;
+    }
+    app_title
+}
+
 fn get_connection_type() -> crate::connection::ConnectionType {
     match env::var(crate::consts::CONNECTION_TYPE_VAR_NAME) {
         Ok(v) => crate::connection::ConnectionType::from_string(&v).unwrap(),
@@ -117,7 +127,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Create a new application
     let app = Application::builder()
-        .application_id(crate::consts::APP_ID)
+        .application_id(&crate::consts::APP_ID)
         .build();
 
     // Connect to "activate" signal of `app`
@@ -148,6 +158,7 @@ fn build_unlock_ui(app: &Application) {
     let window: ApplicationWindow = builder
         .object("window")
         .expect("Could not get object `window` from builder.");
+    window.set_title(Some(&get_window_title()));
 
     let top_box: GtkBox = builder
         .object("top_box")
@@ -224,6 +235,8 @@ fn build_main_ui(app: &Application) {
     let window: ApplicationWindow = builder
         .object("window")
         .expect("Could not get object `window` from builder.");
+    window.set_title(Some(&get_window_title()));
+
     let list: ListBox = builder
         .object("list_box")
         .expect("Could not get object `window` from builder.");
