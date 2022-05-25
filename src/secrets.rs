@@ -1,37 +1,18 @@
-pub mod KeePassXC {
-    pub struct Entry {
-        pub uuid: String,
+use std::env;
 
-        pub title: String,
-        pub username: String,
-        pub password: String,
-        pub url: String,
-        pub notes: String,
-    }
+pub const DEFAULT_DB_FILE_NAME: &str = "mfa-agent.kdbx";
 
-    pub enum EntryReference {
-        Unknown,
-        Title,
-        UserName,
-        Password,
-        Url,
-        Notes,
-        QUuid,
-        CustomAttributes,
-    }
+pub fn get_db_file_path() -> String {
+    // TODO use the config for the db path?
+    let db_dir = match env::home_dir() {
+        Some(p) => p.display().to_string(),
+        None => ".".to_string(),
+    };
+    db_dir + "/" + DEFAULT_DB_FILE_NAME
+}
 
-    pub struct Group {
-        pub uuid: String,
-
-        pub name: String,
-        pub notes: String,
-        pub tags: String,
-
-        entries: Vec<Entry>,
-    }
-
-    pub struct Database {
-        entries: Vec<Entry>,
-        groups: Vec<Entry>,
+pub mod Database {
+    pub fn get_totp_secrets() -> Result<Vec<String>, String> {
+        Ok(vec![])
     }
 }

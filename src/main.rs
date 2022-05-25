@@ -62,6 +62,19 @@ fn get_connection_type() -> crate::connection::ConnectionType {
     }
 }
 
+fn get_app_id() -> &'static str {
+    match env::var(crate::consts::IS_DEV_VAR_NAME) {
+        Ok(v) => {
+            if v == "true" {
+                crate::consts::DEV_APP_ID
+            } else {
+                crate::consts::APP_ID
+            }
+        }
+        Err(_) => crate::consts::APP_ID,
+    }
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     logger::init();
@@ -88,17 +101,19 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         match connection_type {
             crate::connection::ConnectionType::Bluetooth => {
+                // TODO this should call ping instead
                 tokio::spawn(crate::bluetooth::send_request_to_server(
                     "allo mon ami!!!".as_bytes().to_vec(),
                 ));
             }
             crate::connection::ConnectionType::Tcp => {
-                tokio::spawn(crate::tcp::send_data("allo mon ami!!!".as_bytes().to_vec()));
+                // TODO this should call ping instead
+                // tokio::spawn(crate::tcp::send_data("allo mon ami!!!".as_bytes().to_vec()));
             }
             crate::connection::ConnectionType::Usb => {
                 // TODO not implemented yet.
             }
-        }
+        };
 
         // Do not open a database when a proxy.
     } else {
@@ -115,21 +130,32 @@ async fn main() -> Result<(), Box<dyn Error>> {
         log::info!("Running in remote agent mode!");
         match connection_type {
             crate::connection::ConnectionType::Bluetooth => {
-                tokio::spawn(crate::bluetooth::start_server());
+                tokio::spawn(async {
+                    if let Err(e) = crate::bluetooth::start_server().await {
+                        log::error!("Error while starting bluetooth server: {}", e);
+                    } else {
+                        log::info!("Bluetooth server has finished serving.");
+                    }
+                });
             }
             crate::connection::ConnectionType::Tcp => {
-                tokio::spawn(crate::tcp::start_server());
+                tokio::spawn(async {
+                    if let Err(e) = crate::tcp::start_server().await {
+                        log::error!("Error while starting TCP server: {}", e);
+                    } else {
+                        log::info!("TCP server has finished serving.");
+                    }
+                });
             }
             crate::connection::ConnectionType::Usb => {
                 // TODO not implemented yet.
             }
-        }
+        };
     }
 
+    log::info!("Building GTK application {}", get_app_id());
     // Create a new application
-    let app = Application::builder()
-        .application_id(&crate::consts::APP_ID)
-        .build();
+    let app = Application::builder().application_id(get_app_id()).build();
 
     // Connect to "activate" signal of `app`
     // app.connect_activate(build_unlock_ui);

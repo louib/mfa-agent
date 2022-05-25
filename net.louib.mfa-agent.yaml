@@ -1,5 +1,5 @@
 ---
-app-id: net.louib.mfa-agent
+app-id: net.louib.mfa-agent-dev
 runtime: org.gnome.Platform
 runtime-version: master
 sdk: org.gnome.Sdk
@@ -9,6 +9,8 @@ build-options:
   append-path: "/usr/lib/sdk/rust-nightly/bin"
   build-args:
     - "--share=network"
+env:
+  MFA_AGENT_IS_DEV=true
 command: /app/bin/mfa-agent
 tags:
   - nightly

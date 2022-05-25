@@ -17,7 +17,6 @@ pub fn get_config_file_path() -> String {
 }
 
 pub const DEFAULT_CONFIG_FILE_NAME: &str = ".mfa-agent-config.yaml";
-pub const DEFAULT_DB_FILE_NAME: &str = "mfa-agent.kdbx";
 
 #[derive(Deserialize, Serialize, Debug, Default)]
 pub struct Config {

@@ -1,10 +1,12 @@
 pub const APP_ID: &str = "net.louib.mfa-agent";
+pub const DEV_APP_ID: &str = "net.louib.mfa-agent-dev";
 pub const APP_NAME: &str = "mfa-agent";
 pub const APP_TITLE: &str = "MFA Agent";
 pub const PROXY_TITLE_SUFFIX: &str = "(proxy)";
 pub const AGENT_TITLE_SUFFIX: &str = "(remote)";
 
 pub const IS_PROXY_VAR_NAME: &str = "MFA_AGENT_IS_PROXY";
+pub const IS_DEV_VAR_NAME: &str = "MFA_AGENT_IS_DEV";
 pub const CONNECTION_TYPE_VAR_NAME: &str = "MFA_AGENT_CONNECTION_TYPE";
 
 /// Bluetooth Service UUID.
