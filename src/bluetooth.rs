@@ -23,19 +23,6 @@ pub struct BluetoothDevice {
     pub name: Option<String>,
 }
 
-pub struct SearchRequest {
-    term: String,
-}
-pub struct SearchResponse {
-    term: String,
-}
-pub struct HMACRequest {
-    secretId: String,
-}
-pub struct HMACResponse {
-    secretId: String,
-}
-
 pub async fn start_server() -> bluer::Result<()> {
     let session = bluer::Session::new().await?;
     let adapter = session.default_adapter().await?;

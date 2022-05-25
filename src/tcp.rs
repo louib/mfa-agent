@@ -5,7 +5,19 @@ use async_std::prelude::*;
 static PROXY_LOCALHOST_ADDRESS: &str = "127.0.0.1:34372";
 pub const BUFFER_SIZE: usize = 1024;
 
-pub async fn send_data(data: Vec<u8>) -> Result<(), String> {
+pub async fn search(text: String) -> Result<Vec<u8>, String> {
+    let mut data = vec![0u8; BUFFER_SIZE];
+    data[0] = crate::api::OperationType::Search.to_byte();
+
+    let payload = text.as_str().as_bytes().to_vec();
+    for i in 1..payload.len() {
+        data[i] = payload[i-1];
+    }
+
+    send_data(data).await
+}
+
+pub async fn send_data(data: Vec<u8>) -> Result<Vec<u8>, String> {
     // TODO also consider https://doc.rust-lang.org/std/net/struct.TcpStream.html#method.connect_timeout
     let mut stream = match TcpStream::connect(PROXY_LOCALHOST_ADDRESS).await {
         Ok(s) => s,
@@ -21,7 +33,7 @@ pub async fn send_data(data: Vec<u8>) -> Result<(), String> {
     // TODO see https://doc.rust-lang.org/std/net/struct.TcpStream.html#method.set_read_timeout
     // TODO see https://doc.rust-lang.org/std/net/struct.TcpStream.html#method.set_write_timeout
 
-    Ok(())
+    Ok(buf)
 }
 
 pub async fn start_server() -> Result<(), String> {
@@ -40,7 +52,9 @@ pub async fn start_server() -> Result<(), String> {
         let mut buffer = [0; BUFFER_SIZE];
         stream.read(&mut buffer).await.unwrap();
 
-        println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
+        let operation_type = crate::api::OperationType::from_byte(buffer[0]);
+
+        println!("Request: {:?} {}", operation_type, String::from_utf8_lossy(&buffer[..]));
     }
     Ok(())
 }

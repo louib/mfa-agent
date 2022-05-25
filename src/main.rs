@@ -32,6 +32,7 @@ mod connection;
 mod consts;
 mod logger;
 mod tcp;
+mod api;
 mod utils;
 // mod numpad;
 mod secrets;
@@ -266,6 +267,7 @@ fn build_main_ui(app: &Application) {
     search_entry.connect_activate(move |entry| {
         let text = entry.text();
         log::debug!("Got a query for text {}.", text);
+        tokio::spawn(crate::tcp::search(text.to_string()));
         // TODO send the request to the server!!!
     });
 
