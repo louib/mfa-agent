@@ -3,15 +3,16 @@ use async_std::prelude::*;
 
 static PROXY_LOCALHOST_ADDRESS: &str = "127.0.0.1:34372";
 
-async fn send_data(data: Vec<u8>) -> Result<(), String> {
+pub async fn send_data(data: Vec<u8>) -> Result<(), String> {
     // TODO also consider https://doc.rust-lang.org/std/net/struct.TcpStream.html#method.connect_timeout
     let mut stream = match TcpStream::connect(PROXY_LOCALHOST_ADDRESS).await {
         Ok(s) => s,
         Err(e) => return Err(e.to_string()),
     };
 
-    stream.write_all(b"hello world").await.map_err(|e| e.to_string());
+    stream.write_all(&data).await.map_err(|e| e.to_string());
 
+    // FIXME we should have a bigger buffer here, no?
     let mut buf = vec![0u8; 1024];
     let n = stream.read(&mut buf).await.map_err(|e| e.to_string());
 

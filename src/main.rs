@@ -74,9 +74,22 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //
     if is_proxy() {
         log::info!("Running in proxy mode!");
-        tokio::spawn(crate::bluetooth::send_request_to_server(
-            "allo mon ami!!!".as_bytes().to_vec(),
-        ));
+
+        match connection_type {
+            crate::connection::ConnectionType::Bluetooth => {
+                tokio::spawn(crate::bluetooth::send_request_to_server(
+                    "allo mon ami!!!".as_bytes().to_vec(),
+                ));
+            },
+            crate::connection::ConnectionType::Tcp => {
+                tokio::spawn(crate::tcp::send_data(
+                    "allo mon ami!!!".as_bytes().to_vec(),
+                ));
+            },
+            crate::connection::ConnectionType::Usb => {
+                // TODO not implemented yet.
+            },
+        }
 
         // Do not open a database when a proxy.
     } else {
