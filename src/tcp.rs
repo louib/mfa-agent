@@ -11,17 +11,13 @@ static PROXY_LOCALHOST_ADDRESS: &str = "127.0.0.1:34372";
 pub const BUFFER_SIZE: usize = 1024;
 
 pub async fn search(text: String) -> Result<crate::api::SearchResponse, String> {
-    let mut data = vec![0u8; BUFFER_SIZE];
-    data[0] = crate::api::OperationType::Search.to_byte();
-
-    let payload = text.as_str().as_bytes().to_vec();
-    for i in 1..payload.len() {
-        data[i] = payload[i - 1];
-    }
-
+    log::info!("Send search request for `{}`", text);
     let mut request: crate::api::Request = crate::api::Request::default();
     request.op = crate::api::OperationType::Search;
-    request.payload = data.clone();
+    request.payload = match serde_yaml::to_string(&text) {
+        Ok(p) => p.as_bytes().to_vec(),
+        Err(e) => return Err(e.to_string()),
+    };
     let response = match send_request::<crate::api::SearchResponse>(request).await {
         Ok(r) => r,
         Err(e) => return Err(e),
@@ -31,6 +27,7 @@ pub async fn search(text: String) -> Result<crate::api::SearchResponse, String> 
 }
 
 pub async fn ping() -> Result<crate::api::PingResponse, String> {
+    log::info!("Send ping request");
     let mut request: crate::api::Request = crate::api::Request::default();
     request.op = crate::api::OperationType::Ping;
     let response = match send_request::<crate::api::PingResponse>(request).await {
