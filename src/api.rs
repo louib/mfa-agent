@@ -4,6 +4,8 @@ use std::str;
 pub const CURRENT_VERSION: u8 = 0x47;
 
 #[derive(Debug)]
+#[derive(PartialEq)]
+#[derive(Clone)]
 pub enum OperationType {
     Ping,
     Search,
@@ -12,6 +14,7 @@ pub enum OperationType {
     /// List the secrets in the remote agent. This will
     /// return a list of *sanitized* secrets.
     List,
+    // SSH connect
     // PGP Encrypt
     // Seed (send an initial secrets payload to a device)
     // Crypto sign a transaction
@@ -58,11 +61,11 @@ impl Default for Request {
 impl Request {
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut response: Vec<u8> = vec![];
-        response[0] = self.version as u8;
-        response[1] = self.op.to_byte();
+        response.push(self.version as u8);
+        response.push(self.op.to_byte());
         // TODO validate that the last index is not included!
         for payload_index in 0..self.payload.len() {
-            response[1 + payload_index] = self.payload[payload_index];
+            response.push(self.payload[payload_index]);
         }
         response
     }
@@ -73,7 +76,10 @@ impl Request {
             return Err(format!("Invalid API version {}", response.version));
         }
         response.op = OperationType::from_byte(bytes[1])?;
-        // TODO extract and validate the response.
+        response.payload = vec![];
+        for i in 2..bytes.len() {
+            response.payload.push(bytes[i]);
+        }
         Ok(response)
     }
 }
@@ -89,9 +95,11 @@ impl Default for Response {
 impl Response {
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut response: Vec<u8> = vec![];
-        response[0] = self.version;
-        response[1] = self.code.to_byte();
-        // TODO add the response!
+        response.push(self.version);
+        response.push(self.code.to_byte());
+        for i in 0..self.payload.len() {
+            response.push(self.payload[i]);
+        }
         response
     }
     pub fn from_bytes(bytes: &[u8]) -> Result<Response, String> {
@@ -104,11 +112,18 @@ impl Response {
             Ok(c) => c,
             Err(e) => return Err(e),
         };
+        response.payload = vec![];
+        for i in 2..bytes.len() {
+            response.payload.push(bytes[i]);
+        }
         Ok(response)
     }
 }
 
 
+#[derive(Clone)]
+#[derive(PartialEq)]
+#[derive(Debug)]
 pub enum StatusCode {
     Ok,
     Err,
@@ -168,4 +183,104 @@ pub async fn handle_request(request: Request) -> Result<Response, String> {
         },
         _ => panic!("Operation {:?} not implemented yet.", request.op),
     }
+}
+
+mod api_tests {
+
+    #[test]
+    pub fn test_request_serialization_without_payload() {
+        let request = crate::api::Request::default();
+        let bytes = request.to_bytes();
+        assert_eq!(bytes.len(), 2);
+    }
+
+    #[test]
+    pub fn test_request_serialization_with_payload() {
+        let mut request = crate::api::Request::default();
+        let bytes = request.to_bytes();
+        assert_eq!(bytes.len(), 2);
+        request.payload = vec![0x12, 0x13, 0x14, 0x15];
+        let bytes = request.to_bytes();
+        assert_eq!(bytes.len(), 6);
+    }
+
+    #[test]
+    pub fn test_request_deserialization_without_payload() {
+        let operation = crate::api::OperationType::HMAC;
+
+        let mut request = crate::api::Request::default();
+        request.op = operation.clone();
+
+        let bytes = request.to_bytes();
+        assert_eq!(bytes.len(), 2);
+        let request = crate::api::Request::from_bytes(&bytes).unwrap();
+        assert_eq!(request.op, operation);
+    }
+
+    #[test]
+    pub fn test_request_deserialization_with_payload() {
+        let operation = crate::api::OperationType::HMAC;
+        let payload = vec![0x66, 0x77, 0x88, 0x99];
+
+        let mut request = crate::api::Request::default();
+        request.op = operation.clone();
+        request.payload = payload.clone();
+
+        let bytes = request.to_bytes();
+        assert_eq!(bytes.len(), 6);
+        let request = crate::api::Request::from_bytes(&bytes).unwrap();
+        assert_eq!(request.op, operation);
+        assert_eq!(request.payload, payload);
+    }
+
+    #[test]
+    pub fn test_response_serialization_without_payload() {
+        let response = crate::api::Response::default();
+        let bytes = response.to_bytes();
+        assert_eq!(bytes.len(), 2);
+    }
+
+    #[test]
+    pub fn test_response_serialization_with_payload() {
+        let mut response = crate::api::Response::default();
+        let bytes = response.to_bytes();
+        assert_eq!(bytes.len(), 2);
+        response.payload = vec![0x12, 0x13, 0x14, 0x15];
+        let bytes = response.to_bytes();
+        assert_eq!(bytes.len(), 6);
+    }
+
+    #[test]
+    pub fn test_response_deserialization_without_payload() {
+        let code = crate::api::StatusCode::Ok;
+
+        let mut response = crate::api::Response::default();
+        response.code = code.clone();
+
+        let bytes = response.to_bytes();
+        assert_eq!(bytes.len(), 2);
+        let response = crate::api::Response::from_bytes(&bytes).unwrap();
+        assert_eq!(response.code, code);
+    }
+
+    #[test]
+    pub fn test_response_deserialization_with_payload() {
+        let code = crate::api::StatusCode::Ok;
+        let payload = vec![0x66, 0x77, 0x88, 0x99];
+
+        let mut response = crate::api::Response::default();
+        response.code = code.clone();
+        response.payload = payload.clone();
+
+        let bytes = response.to_bytes();
+        assert_eq!(bytes.len(), 6);
+        let response = crate::api::Response::from_bytes(&bytes).unwrap();
+        assert_eq!(response.code, code);
+        assert_eq!(response.payload, payload);
+    }
+
+    pub fn test_request_deserialization_invalid_version() {
+        // TODO
+    }
+
 }
