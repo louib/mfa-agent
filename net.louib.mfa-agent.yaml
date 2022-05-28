@@ -9,8 +9,6 @@ build-options:
   append-path: "/usr/lib/sdk/rust-nightly/bin"
   build-args:
     - "--share=network"
-env:
-  MFA_AGENT_IS_DEV=true
 command: /app/bin/mfa-agent
 tags:
   - nightly
