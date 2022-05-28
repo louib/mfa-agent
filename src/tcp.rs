@@ -4,8 +4,8 @@ use async_std::net::{TcpListener, TcpStream};
 use async_std::prelude::*;
 use std::io::prelude::*;
 
-use serde::{Deserialize, Serialize};
 use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
 static PROXY_LOCALHOST_ADDRESS: &str = "127.0.0.1:34372";
 pub const BUFFER_SIZE: usize = 1024;
@@ -39,15 +39,18 @@ pub async fn ping() -> Result<crate::api::PingResponse, String> {
 
 pub async fn send_request<T>(request: crate::api::Request) -> Result<T, String>
 where
-  T: DeserializeOwned {
-
+    T: DeserializeOwned,
+{
     // TODO also consider https://doc.rust-lang.org/std/net/struct.TcpStream.html#method.connect_timeout
     let mut stream = match TcpStream::connect(PROXY_LOCALHOST_ADDRESS).await {
         Ok(s) => s,
         Err(e) => return Err(e.to_string()),
     };
 
-    stream.write_all(&request.to_bytes()).await.map_err(|e| e.to_string());
+    stream
+        .write_all(&request.to_bytes())
+        .await
+        .map_err(|e| e.to_string());
 
     // FIXME we should have a bigger buffer here, no?
     let mut buf = vec![0u8; BUFFER_SIZE];
@@ -101,7 +104,6 @@ pub async fn start_server() -> Result<(), String> {
             stream.write(&response.to_bytes()).await.unwrap();
             stream.flush().await.unwrap();
         }
-
     }
     Ok(())
 }

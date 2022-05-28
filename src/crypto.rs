@@ -1,8 +1,7 @@
+use aes_gcm::aead::{generic_array::GenericArray, Aead, NewAead};
 use aes_gcm::Aes256Gcm;
-use aes_gcm::aead::{Aead, NewAead, generic_array::GenericArray};
 
-use std::convert::{TryInto, TryFrom, From};
-
+use std::convert::{From, TryFrom, TryInto};
 
 // We need a separator that is not used with base64 encoding.
 pub const NONCE_SEPARATOR: &str = ":";
@@ -24,7 +23,7 @@ pub fn encrypt(plaintext: &str, key: &str) -> String {
     let cipher = Aes256Gcm::new(GenericArray::from_slice(key.as_bytes()));
     let ciphertext = match cipher.encrypt(
         GenericArray::from_slice(nonce.as_bytes().as_ref()),
-        plaintext.as_bytes().as_ref()
+        plaintext.as_bytes().as_ref(),
     ) {
         Ok(encrypted) => encrypted,
         Err(_) => return String::from(""),
@@ -40,7 +39,7 @@ pub fn decrypt(cipher_text: &str, key: &str) -> String {
     }
 
     // TODO return an Err instead.
-    if ! cipher_text.contains(NONCE_SEPARATOR) {
+    if !cipher_text.contains(NONCE_SEPARATOR) {
         panic!("Invalid ciphertext {}", cipher_text);
     }
 
@@ -58,7 +57,7 @@ pub fn decrypt(cipher_text: &str, key: &str) -> String {
     let cipher = Aes256Gcm::new(GenericArray::from_slice(key.as_bytes()));
     let plaintext = match cipher.decrypt(
         GenericArray::from_slice(nonce.as_bytes().as_ref()),
-        ciphertext.as_ref()
+        ciphertext.as_ref(),
     ) {
         Ok(plaintext) => plaintext,
         Err(_) => panic!("Could not decrypt ciphertext"),
@@ -110,7 +109,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected="Invalid key length")]
+    #[should_panic(expected = "Invalid key length")]
     pub fn test_decrypt_invalid_key_length() {
         let cipher_text = "/kOLv7RYVgpbnWtDp1XQXMT7+VhsjLFIhabRqgz/AUY=:xc5xHJiBkVE=";
         let plain_text = decrypt(cipher_text, "key-with-invalid-length");

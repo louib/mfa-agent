@@ -56,7 +56,13 @@ pub struct Request {
     pub payload: Vec<u8>,
 }
 impl Default for Request {
-    fn default() -> Self { Request { version: CURRENT_VERSION, op: OperationType::Ping, payload: vec![] } }
+    fn default() -> Self {
+        Request {
+            version: CURRENT_VERSION,
+            op: OperationType::Ping,
+            payload: vec![],
+        }
+    }
 }
 impl Request {
     pub fn to_bytes(&self) -> Vec<u8> {
@@ -90,7 +96,13 @@ pub struct Response {
     pub payload: Vec<u8>,
 }
 impl Default for Response {
-    fn default() -> Self { Response { version: CURRENT_VERSION, code: StatusCode::Ok, payload: vec![] } }
+    fn default() -> Self {
+        Response {
+            version: CURRENT_VERSION,
+            code: StatusCode::Ok,
+            payload: vec![],
+        }
+    }
 }
 impl Response {
     pub fn to_bytes(&self) -> Vec<u8> {
@@ -119,7 +131,6 @@ impl Response {
         Ok(response)
     }
 }
-
 
 #[derive(Clone)]
 #[derive(PartialEq)]
@@ -171,16 +182,16 @@ pub struct SanitizedSecret {
 pub async fn handle_request(request: Request) -> Result<Response, String> {
     match request.op {
         Ping => {
-            let ping_request: PingRequest = match serde_json::from_str(str::from_utf8(&request.payload).unwrap()) {
-                Ok(r) => r,
-                Err(e) => return Err(e.to_string()),
-            };
+            let ping_request: PingRequest =
+                match serde_json::from_str(str::from_utf8(&request.payload).unwrap()) {
+                    Ok(r) => r,
+                    Err(e) => return Err(e.to_string()),
+                };
             let response = crate::api::Response::default();
             return Ok(response);
 
             // let ping_response: PingResponse = ConnectionType::execute()
-
-        },
+        }
         _ => panic!("Operation {:?} not implemented yet.", request.op),
     }
 }
@@ -282,5 +293,4 @@ mod api_tests {
     pub fn test_request_deserialization_invalid_version() {
         // TODO
     }
-
 }
