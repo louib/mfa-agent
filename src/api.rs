@@ -171,7 +171,7 @@ pub struct SanitizedSecret {
 pub async fn handle_request(request: Request) -> Result<Response, String> {
     match request.op {
         Ping => {
-            let ping_request: PingRequest = match serde_yaml::from_str(str::from_utf8(&request.payload).unwrap()) {
+            let ping_request: PingRequest = match serde_json::from_str(str::from_utf8(&request.payload).unwrap()) {
                 Ok(r) => r,
                 Err(e) => return Err(e.to_string()),
             };

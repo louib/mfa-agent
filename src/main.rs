@@ -90,6 +90,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let connection_type = get_connection_type();
+    log::info!("Connecting over {}", connection_type.to_string());
 
     // std::process::exit(run::<crate::numpad::NumPad>());
 

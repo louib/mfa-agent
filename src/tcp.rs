@@ -14,7 +14,7 @@ pub async fn search(text: String) -> Result<crate::api::SearchResponse, String> 
     log::info!("Send search request for `{}`", text);
     let mut request: crate::api::Request = crate::api::Request::default();
     request.op = crate::api::OperationType::Search;
-    request.payload = match serde_yaml::to_string(&text) {
+    request.payload = match serde_json::to_string(&text) {
         Ok(p) => p.as_bytes().to_vec(),
         Err(e) => return Err(e.to_string()),
     };
@@ -60,7 +60,7 @@ where
         Err(e) => return Err(e),
     };
 
-    let response: T = match serde_yaml::from_str(str::from_utf8(&response.payload).unwrap()) {
+    let response: T = match serde_json::from_str(str::from_utf8(&response.payload).unwrap()) {
         Ok(r) => r,
         Err(e) => return Err(e.to_string()),
     };
