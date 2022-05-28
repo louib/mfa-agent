@@ -93,11 +93,7 @@ pub async fn start_server() -> Result<(), String> {
                 Err(e) => return Err(format!("Could not parse request from client: {}", e)),
             };
 
-            println!(
-                "Request: {:?} {}",
-                request.op,
-                String::from_utf8_lossy(&request.payload)
-            );
+            log::info!("Received request {:?}", request.op);
 
             let response = crate::api::Response::default();
             // TODO call handle_request
