@@ -47,6 +47,8 @@ where
         Err(e) => return Err(e.to_string()),
     };
 
+    // TODO see https://doc.rust-lang.org/std/net/struct.TcpStream.html#method.set_read_timeout
+    // TODO see https://doc.rust-lang.org/std/net/struct.TcpStream.html#method.set_write_timeout
     stream
         .write_all(&request.to_bytes())
         .await
@@ -56,8 +58,6 @@ where
     let mut buf = vec![0u8; BUFFER_SIZE];
     let n = stream.read(&mut buf).await.map_err(|e| e.to_string());
 
-    // TODO see https://doc.rust-lang.org/std/net/struct.TcpStream.html#method.set_read_timeout
-    // TODO see https://doc.rust-lang.org/std/net/struct.TcpStream.html#method.set_write_timeout
     let response = match crate::api::Response::from_bytes(&buf) {
         Ok(r) => r,
         Err(e) => return Err(e),

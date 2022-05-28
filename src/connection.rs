@@ -11,7 +11,6 @@ pub enum ConnectionType {
     Tcp,
     Usb,
 }
-
 impl ConnectionType {
     pub fn to_string(&self) -> String {
         match &self {
@@ -55,4 +54,8 @@ impl ConnectionType {
             Err(e) => Err(e).map_err(serde::de::Error::custom),
         }
     }
+}
+
+pub trait ConnectionSender {
+    fn send_data(data: Vec<u8>) -> Vec<u8>;
 }
