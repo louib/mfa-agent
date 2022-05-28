@@ -22,6 +22,7 @@ finish-args:
   - "--socket=system-bus"
   - "--device=dri"
   - "--env=MFA_AGENT_LOG_LEVEL=info"
+  - "--env=MFA_AGENT_IS_DEV=true"
   - "--env=RUST_BACKTRACE=1"
 modules:
   - name: mfa-agent
