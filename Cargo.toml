@@ -34,7 +34,7 @@ gtk = { version = "0.4", package = "gtk4" }
 gio = { version = "0.15", features = ["v2_50"] }
 glib = "0.15"
 gtk-macros = "0.3"
-# libhandy = "0.9"
+libadwaita = "0.1"
 # vgtk = "0.3"
 
 tokio = { version = "1.1", features = ["full"] }

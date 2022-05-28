@@ -9,6 +9,7 @@ use gio::prelude::*;
 use gtk::prelude::WidgetExt;
 use gtk::prelude::*;
 use gtk::{Align, Application, ApplicationWindow, Box as GtkBox, Button, Entry, Label, ListBox, Switch};
+use libadwaita::prelude::*;
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     time::sleep,
@@ -167,8 +168,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
         app.quit();
     }));
     app.connect_startup(|app| {
+        libadwaita::init();
+
         app.set_accels_for_action("app.quit", &["<Primary>Q"]);
     });
+
     app.add_action(&quit);
 
     // Run the application

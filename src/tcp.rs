@@ -94,8 +94,8 @@ pub async fn start_server() -> Result<(), String> {
             };
 
             log::info!("Received request {:?}", request.op);
+            let response = crate::api::handle_request(request).await?;
 
-            let response = crate::api::Response::default();
             // TODO call handle_request
             stream.write(&response.to_bytes()).await.unwrap();
             stream.flush().await.unwrap();

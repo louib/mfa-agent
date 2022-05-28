@@ -5,6 +5,9 @@
     <property name="default-height">400</property>
     <child>
       <object class="GtkListBox" id="list_box">
+        <style>
+          <class name="content"/>
+        </style>
         <child>
           <object class="GtkButton" id="button">
             <property name="label">Press this!</property>

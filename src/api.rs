@@ -179,21 +179,36 @@ pub struct SanitizedSecret {
     secretName: String,
 }
 
-pub async fn handle_request(request: Request) -> Result<Response, String> {
-    match request.op {
-        Ping => {
-            let ping_request: PingRequest =
-                match serde_json::from_str(str::from_utf8(&request.payload).unwrap()) {
-                    Ok(r) => r,
-                    Err(e) => return Err(e.to_string()),
-                };
-            let response = crate::api::Response::default();
-            return Ok(response);
+pub async fn handle_ping_request(request: crate::api::Request) -> Result<crate::api::PingResponse, String> {
+    log::info!("Handling ping request");
+    Ok(())
+}
 
-            // let ping_response: PingResponse = ConnectionType::execute()
+pub async fn handle_search_request(request: crate::api::Request) -> Result<crate::api::SearchResponse, String> {
+    log::info!("Handling search request");
+    let search_term: &str = str::from_utf8(&request.payload).map_err(|e| e.to_string())?;
+    let search_term: crate::api::SearchRequest =
+        serde_json::from_str(search_term).map_err(|e| e.to_string())?;
+
+    Ok(vec!["allo".to_string(), "toi".to_string()])
+}
+
+pub async fn handle_request(request: crate::api::Request) -> Result<crate::api::Response, String> {
+    let mut response = crate::api::Response::default();
+
+    match request.op {
+        crate::api::OperationType::Ping => {
+            let op_response = handle_ping_request(request).await?;
+            response.payload = serde_json::to_string(&op_response)
+                .map_err(|e| e.to_string())?
+                .as_bytes()
+                .to_vec();
+            // response.code = ???
         }
-        _ => panic!("Operation {:?} not implemented yet.", request.op),
+        _ => return Err(format!("Operation {:?} not implemented yet.", request.op)),
     }
+
+    Ok(response)
 }
 
 mod api_tests {
