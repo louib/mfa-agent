@@ -10,6 +10,7 @@ use gtk::prelude::WidgetExt;
 use gtk::prelude::*;
 use gtk::{Align, Application, ApplicationWindow, Box as GtkBox, Button, Entry, Label, ListBox, Switch};
 use libadwaita::prelude::*;
+use libadwaita::subclass::prelude::*;
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     time::sleep,
@@ -90,6 +91,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         panic!("Failed to initialize GTK: {}", e);
     }
 
+    libadwaita::init();
+
     let connection_type = get_connection_type();
     log::info!("Connecting over {}", connection_type.to_string());
 
@@ -159,21 +162,20 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Create a new application
     let app = Application::builder().application_id(get_app_id()).build();
 
-    // Connect to "activate" signal of `app`
-    // app.connect_activate(build_unlock_ui);
-    app.connect_activate(build_main_ui);
-
     let quit = gio::SimpleAction::new("quit", None);
     quit.connect_activate(glib::clone!(@weak app => move |_action, _parameter| {
         app.quit();
     }));
     app.connect_startup(|app| {
-        libadwaita::init();
-
         app.set_accels_for_action("app.quit", &["<Primary>Q"]);
     });
 
     app.add_action(&quit);
+
+    // Connect to "activate" signal of `app`
+    // app.connect_activate(build_unlock_ui);
+    // app.connect_activate(build_main_ui);
+    app.connect_activate(build_alt_ui);
 
     // Run the application
     app.run();
@@ -310,6 +312,23 @@ fn build_main_ui(app: &Application) {
 
     // Add buttons
     window.set_child(Some(&list));
+    window.present();
+}
+
+fn build_alt_ui(app: &Application) {
+    let builder = gtk::Builder::from_string(include_str!("ui/window.ui"));
+
+    // Get window and button from `gtk::Builder`
+    let window: ApplicationWindow = builder
+        .object("window")
+        .expect("Could not get object `window` from builder.");
+    window.set_title(Some(&get_window_title()));
+
+    // Set application
+    window.set_application(Some(app));
+
+    // Add buttons
+    //window.set_child(Some(&list));
     window.present();
 }
 
