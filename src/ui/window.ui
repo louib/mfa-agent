@@ -79,15 +79,30 @@
                 <property name="icon-name">preferences-system-windows</property>
                 <property name="badge-number">4</property>
                 <property name="child">
-                  <object class="GtkBox" id="settings_box">
-                    <property name="orientation">horizontal</property>
+                  <object class="GtkListBox" id="settings_box">
+                    <property name="selection-mode">none</property>
+                    <property name="name">settings_box</property>
+                    <style>
+                      <class name="boxed-list"/>
+                    </style>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="label">Enable server</property>
+                      <object class="AdwActionRow">
+                        <property name="title">Enable agent</property>
+                        <property name="name">enable_agent_row</property>
+                        <child>
+                          <object class="GtkSwitch" id="enable_agent">
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkSwitch" id="enable_server">
+                      <object class="AdwActionRow">
+                        <property name="title">Enable quick unlock</property>
+                        <property name="name">enable_quick_unlock_row</property>
+                        <child>
+                          <object class="GtkSwitch" id="enable_quick_unlock">
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>

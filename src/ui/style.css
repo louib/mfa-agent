@@ -1,4 +1,11 @@
 /*
+ * The CSS stylesheet used by GTK is not super well documented, but
+ * the source code can be used to discover all the elements that
+ * can be specified.
+ * https://gitlab.gnome.org/GNOME/gtk/-/blob/b2c227e9c57839a2a4e24462a71ae0bad9a95264/gtk/theme/Default/_colors-public.scss
+ */
+
+/*
  * The global variables.
  */
 /*
@@ -11,6 +18,16 @@
 switch {
   background: yellow;
   color: magenta;
+}
+
+/*
+#settings_box {
+  min-width: 200px;
+}
+*/
+
+#enable_agent_row switch {
+  background: magenta;
 }
 
 combo {
