@@ -271,6 +271,9 @@ fn load_css() {
     // Load the CSS file and add it to the provider
     let provider = CssProvider::new();
     provider.load_from_data(include_bytes!("ui/style.css"));
+    provider.load_from_data(include_bytes!("ui/style-dark.css"));
+    provider.load_from_data(include_bytes!("ui/style-hc.css"));
+    provider.load_from_data(include_bytes!("ui/style-hc-dark.css"));
 
     // Add the provider to the default screen
     StyleContext::add_provider_for_display(

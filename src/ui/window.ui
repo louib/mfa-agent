@@ -2,9 +2,12 @@
   <requires lib="gtk+" version="3.20"/>
   <requires lib="libadwaita" version="0.1"/>
   <object class="AdwApplicationWindow" id="window">
-    <property name="can_focus">False</property>
     <property name="modal">True</property>
     <child>
+      <object class="GtkToggleButton" id="toggle_pane_button">
+        <property name="icon-name">sidebar-show-symbolic</property>
+        <property name="active">True</property>
+      </object>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <child>
@@ -22,14 +25,24 @@
             <property name="vexpand">True</property>
             <child>
               <object class="AdwViewStackPage">
-                <property name="name">status</property>
-                <property name="title">Status</property>
+                <property name="name">search</property>
+                <property name="title">Search</property>
                 <property name="visible">True</property>
                 <property name="icon-name">view-list-symbolic</property>
-                <property name="badge-number">1</property>
                 <property name="child">
-                  <object class="AdwStatusPage">
-                    <property name="title">Welcome!</property>
+                  <object class="GtkListBox" id="search_box">
+                    <property name="name">search_box</property>
+                    <style>
+                      <class name="boxed-list"/>
+                    </style>
+                    <child>
+                      <object class="GtkEntry" id="search_entry">
+                        <property name="text">Search for a remote secret...</property>
+                        <style>
+                          <class name="search_entry"/>
+                        </style>
+                      </object>
+                    </child>
                   </object>
                 </property>
               </object>
@@ -65,6 +78,7 @@
                     <child>
                       <object class="AdwComboRow">
                         <property name="title">Connection Type</property>
+                        <property name="subtitle">The type of connection used between proxy and remote agent</property>
                         <property name="model">
                           <object class="GtkStringList">
                             <items>
@@ -85,7 +99,7 @@
                 <property name="name">settings</property>
                 <property name="title">Settings</property>
                 <property name="visible">True</property>
-                <property name="icon-name">preferences-system-windows</property>
+                <property name="icon-name">help-faq-symbolic</property>
                 <property name="badge-number">4</property>
                 <property name="child">
                   <object class="GtkListBox" id="settings_box">
@@ -97,6 +111,7 @@
                     <child>
                       <object class="AdwActionRow">
                         <property name="title">Enable agent</property>
+                        <property name="subtitle">Accept requests from the proxy.</property>
                         <property name="name">enable_agent_row</property>
                         <child>
                           <object class="GtkSwitch" id="enable_agent">
@@ -122,9 +137,7 @@
         </child>
         <child>
           <object class="AdwViewSwitcherBar">
-            <property name="visible">True</property>
             <property name="stack">stack</property>
-            <property name="can_focus">False</property>
             <binding name="reveal">
               <lookup name="title-visible">title</lookup>
             </binding>

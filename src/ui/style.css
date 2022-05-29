@@ -30,5 +30,10 @@ switch {
   background: magenta;
 }
 
+#search_entry {
+  margin: 12pt;
+}
+
 combo {
+
 }
