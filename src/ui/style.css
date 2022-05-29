@@ -1,3 +1,17 @@
+/*
+ * The global variables.
+ */
+/*
+:root {
+  --blue: #1e90ff;
+  --white: #ffffff;
+}
+*/
+
 switch {
+  background: yellow;
   color: magenta;
+}
+
+combo {
 }

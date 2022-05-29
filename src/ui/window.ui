@@ -50,11 +50,34 @@
             </child>
             <child>
               <object class="AdwViewStackPage">
+                <property name="name">connection</property>
+                <property name="title">Connection</property>
+                <property name="visible">True</property>
+                <property name="icon-name">view-list-symbolic</property>
+                <property name="badge-number">3</property>
+                <property name="child">
+                  <object class="AdwComboRow">
+                    <property name="title">Connection Type</property>
+                    <property name="model">
+                      <object class="GtkStringList">
+                        <items>
+                          <item translatable="yes">TCP</item>
+                          <item translatable="yes">Bluetooth</item>
+                          <item translatable="yes">USB</item>
+                        </items>
+                      </object>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwViewStackPage">
                 <property name="name">settings</property>
                 <property name="title">Settings</property>
                 <property name="visible">True</property>
                 <property name="icon-name">preferences-system-windows</property>
-                <property name="badge-number">3</property>
+                <property name="badge-number">4</property>
                 <property name="child">
                   <object class="GtkBox" id="settings_box">
                     <property name="orientation">horizontal</property>
