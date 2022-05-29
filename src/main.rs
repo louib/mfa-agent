@@ -21,7 +21,6 @@ use tokio::{
 };
 // use vgtk::run;
 
-
 #[derive(Parser)]
 #[clap(name = crate::consts::APP_NAME)]
 // #[clap(author = "louib")]
@@ -199,7 +198,6 @@ fn build_unlock_ui(app: &Application) {
         .object("window")
         .expect("Could not get object `window` from builder.");
     window.set_title(Some(&get_window_title()));
-
 
     let database_label: Label = builder
         .object("database_label")
