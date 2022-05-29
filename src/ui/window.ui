@@ -28,7 +28,7 @@
                 <property name="name">search</property>
                 <property name="title">Search</property>
                 <property name="visible">True</property>
-                <property name="icon-name">view-list-symbolic</property>
+                <property name="icon-name">edit-find-symbolic</property>
                 <property name="child">
                   <object class="GtkListBox" id="search_box">
                     <property name="name">search_box</property>
@@ -52,8 +52,7 @@
                 <property name="name">secrets</property>
                 <property name="title">Secrets</property>
                 <property name="visible">True</property>
-                <property name="icon-name">view-list-symbolic</property>
-                <property name="badge-number">2</property>
+                <property name="icon-name">dialog-password-symbolic</property>
                 <property name="child">
                   <object class="AdwStatusPage">
                     <property name="title">Here are your secrets!</property>
@@ -66,8 +65,7 @@
                 <property name="name">connection</property>
                 <property name="title">Connection</property>
                 <property name="visible">True</property>
-                <property name="icon-name">view-list-symbolic</property>
-                <property name="badge-number">3</property>
+                <property name="icon-name">network-transmit-receive-symbolic</property>
                 <property name="child">
                   <object class="GtkListBox" id="connection_box">
                     <property name="selection-mode">none</property>
@@ -99,8 +97,7 @@
                 <property name="name">settings</property>
                 <property name="title">Settings</property>
                 <property name="visible">True</property>
-                <property name="icon-name">help-faq-symbolic</property>
-                <property name="badge-number">4</property>
+                <property name="icon-name">emblem-system-symbolic</property>
                 <property name="child">
                   <object class="GtkListBox" id="settings_box">
                     <property name="selection-mode">none</property>
