@@ -43,7 +43,30 @@
                 <property name="badge-number">2</property>
                 <property name="child">
                   <object class="AdwStatusPage">
-                    <property name="title">Here are you secrets!</property>
+                    <property name="title">Here are your secrets!</property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="name">settings</property>
+                <property name="title">Settings</property>
+                <property name="visible">True</property>
+                <property name="icon-name">preferences-system-windows</property>
+                <property name="badge-number">3</property>
+                <property name="child">
+                  <object class="GtkBox" id="settings_box">
+                    <property name="orientation">horizontal</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Enable server</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch" id="enable_server">
+                      </object>
+                    </child>
                   </object>
                 </property>
               </object>

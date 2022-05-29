@@ -8,7 +8,8 @@ use futures::{pin_mut, stream::SelectAll, StreamExt};
 use gio::prelude::*;
 use gtk::prelude::WidgetExt;
 use gtk::prelude::*;
-use gtk::{Align, Application, ApplicationWindow, Box as GtkBox, Button, Entry, Label, ListBox, Switch};
+use gtk::{Align, Application, ApplicationWindow, Box as GtkBox, Button, CssProvider, Entry, Label, ListBox, StyleContext, Switch};
+use libadwaita::gdk::{Display};
 use libadwaita::prelude::*;
 use libadwaita::subclass::prelude::*;
 use tokio::{
@@ -167,6 +168,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         app.quit();
     }));
     app.connect_startup(|app| {
+        load_css();
         app.set_accels_for_action("app.quit", &["<Primary>Q"]);
     });
 
@@ -260,6 +262,19 @@ fn build_unlock_ui(app: &Application) {
     // list.append(&button2);
     window.set_child(Some(&parent_box));
     window.present();
+}
+
+fn load_css() {
+    // Load the CSS file and add it to the provider
+    let provider = CssProvider::new();
+    provider.load_from_data(include_bytes!("ui/style.css"));
+
+    // Add the provider to the default screen
+    StyleContext::add_provider_for_display(
+        &Display::default().expect("Could not connect to a display."),
+        &provider,
+        gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+    );
 }
 
 fn build_main_ui(app: &Application) {
