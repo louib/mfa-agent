@@ -56,17 +56,26 @@
                 <property name="icon-name">view-list-symbolic</property>
                 <property name="badge-number">3</property>
                 <property name="child">
-                  <object class="AdwComboRow">
-                    <property name="title">Connection Type</property>
-                    <property name="model">
-                      <object class="GtkStringList">
-                        <items>
-                          <item translatable="yes">TCP</item>
-                          <item translatable="yes">Bluetooth</item>
-                          <item translatable="yes">USB</item>
-                        </items>
+                  <object class="GtkListBox" id="connection_box">
+                    <property name="selection-mode">none</property>
+                    <property name="name">connection_box</property>
+                    <style>
+                      <class name="boxed-list"/>
+                    </style>
+                    <child>
+                      <object class="AdwComboRow">
+                        <property name="title">Connection Type</property>
+                        <property name="model">
+                          <object class="GtkStringList">
+                            <items>
+                              <item translatable="yes">TCP</item>
+                              <item translatable="yes">Bluetooth</item>
+                              <item translatable="yes">USB</item>
+                            </items>
+                          </object>
+                        </property>
                       </object>
-                    </property>
+                    </child>
                   </object>
                 </property>
               </object>
