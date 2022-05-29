@@ -8,8 +8,11 @@ use futures::{pin_mut, stream::SelectAll, StreamExt};
 use gio::prelude::*;
 use gtk::prelude::WidgetExt;
 use gtk::prelude::*;
-use gtk::{Align, Application, ApplicationWindow, Box as GtkBox, Button, CssProvider, Entry, Label, ListBox, StyleContext, Switch};
-use libadwaita::gdk::{Display};
+use gtk::{
+    Align, Application, ApplicationWindow, Box as GtkBox, Button, CssProvider, Entry, Label, ListBox,
+    StyleContext, Switch,
+};
+use libadwaita::gdk::Display;
 use libadwaita::prelude::*;
 use libadwaita::subclass::prelude::*;
 use tokio::{
