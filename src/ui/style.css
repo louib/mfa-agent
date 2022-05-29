@@ -34,6 +34,18 @@ switch {
   margin: 12pt;
 }
 
+#search_entry {
+  margin: 12pt;
+}
+
+.peak_button {
+  margin: 12pt;
+}
+
+.password_entry {
+  margin: 12pt;
+}
+
 combo {
 
 }

@@ -1,4 +1,4 @@
-#![recursion_limit = "256"]
+// #![recursion_limit = "256"]
 use std::env;
 use std::error::Error;
 use std::time::Duration;
@@ -20,7 +20,8 @@ use tokio::{
     time::sleep,
 };
 // use vgtk::run;
-//
+
+
 #[derive(Parser)]
 #[clap(name = crate::consts::APP_NAME)]
 // #[clap(author = "louib")]
@@ -178,9 +179,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.add_action(&quit);
 
     // Connect to "activate" signal of `app`
-    // app.connect_activate(build_unlock_ui);
+    app.connect_activate(build_unlock_ui);
     // app.connect_activate(build_main_ui);
-    app.connect_activate(build_alt_ui);
+    // app.connect_activate(build_alt_ui);
 
     // Run the application
     app.run();
@@ -199,17 +200,13 @@ fn build_unlock_ui(app: &Application) {
         .expect("Could not get object `window` from builder.");
     window.set_title(Some(&get_window_title()));
 
-    let top_box: GtkBox = builder
-        .object("top_box")
-        .expect("Could not get the top box from builder.");
-    let bottom_box: GtkBox = builder
-        .object("bottom_box")
-        .expect("Could not get the bottom box from builder.");
 
-    let password_label: Label = builder
-        .object("label")
-        .expect("Could not get the label field from builder.");
-    password_label.set_text("Please enter your password to unlock the database.");
+    let database_label: Label = builder
+        .object("database_label")
+        .expect("Could not get the database label object from builder.");
+
+    database_label.set_text("Please select a database to unlock");
+
     let peak_button: Button = builder
         .object("peak")
         .expect("Could not get the peak button from builder.");
@@ -217,14 +214,12 @@ fn build_unlock_ui(app: &Application) {
     peak_button.set_valign(Align::End);
 
     if let Some(db_path) = config.default_db_path {
-        password_label.set_text(&format!("Opening database at {}", &db_path));
+        database_label.set_text(&format!("Opening database at {}", &db_path));
     } else if let Some(db_path) = config.last_db_path {
-        password_label.set_text(&format!("Opening database at {}", &db_path));
+        database_label.set_text(&format!("Opening database at {}", &db_path));
     } else {
-        password_label.set_text("Please select a database to open.");
+        database_label.set_text("Please select a database to open.");
     }
-    // top_box.append(&password_label);
-    // top_box.append(&peak_button);
 
     let submit_button: Button = builder
         .object("submit")
@@ -233,16 +228,8 @@ fn build_unlock_ui(app: &Application) {
         .object("password")
         .expect("Could not get the password field from builder.");
     // Put the entry field in password mode.
-    password_field.set_visibility(true);
+    password_field.set_visibility(false);
     password_field.set_width_chars(40);
-    // bottom_box.append(&submit_button);
-    // bottom_box.append(&password_field);
-    //
-    let parent_box: GtkBox = builder
-        .object("parent_box")
-        .expect("Could not get the parent box from builder.");
-    //parent_box.append(&top_box);
-    //parent_box.append(&bottom_box);
 
     // Set application
     window.set_application(Some(app));
@@ -260,10 +247,6 @@ fn build_unlock_ui(app: &Application) {
         // button.set_label("Hello World!");
     });
 
-    // Add buttons
-    // list.append(&button);
-    // list.append(&button2);
-    window.set_child(Some(&parent_box));
     window.present();
 }
 
