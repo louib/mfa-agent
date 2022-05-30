@@ -1,4 +1,5 @@
 // #![recursion_limit = "256"]
+use std::cell::RefCell;
 use std::env;
 use std::error::Error;
 use std::time::Duration;
@@ -6,15 +7,19 @@ use std::time::Duration;
 use clap::{AppSettings, Parser, Subcommand};
 use futures::{pin_mut, stream::SelectAll, StreamExt};
 use gio::prelude::*;
+use glib::{Receiver, Sender};
 use gtk::prelude::WidgetExt;
 use gtk::prelude::*;
+use gtk::subclass::prelude::*;
 use gtk::{
     Align, Application, ApplicationWindow, Box as GtkBox, Button, CssProvider, Entry, Label, ListBox,
     StyleContext, Switch,
 };
+use gtk_macros::send;
 use libadwaita::gdk::Display;
 use libadwaita::prelude::*;
 use libadwaita::subclass::prelude::*;
+use log::error;
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     time::sleep,
@@ -189,6 +194,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn build_unlock_ui(app: &Application) {
+    let (sender, receiver) = glib::MainContext::channel::<ApplicationEvent>(glib::PRIORITY_DEFAULT);
+    let receiver = RefCell::new(Some(receiver));
+
+    receiver.borrow_mut().take().unwrap().attach(None, |event| {
+        println!("Received application event {:?}", event);
+        return glib::Continue(true);
+    });
+
     let config = crate::config::read_or_init().expect("Could not load config.");
 
     let builder = gtk::Builder::from_string(include_str!("ui/unlock.ui"));
@@ -199,50 +212,48 @@ fn build_unlock_ui(app: &Application) {
         .expect("Could not get object `window` from builder.");
     window.set_title(Some(&get_window_title()));
 
-    let database_label: Label = builder
-        .object("database_label")
-        .expect("Could not get the database label object from builder.");
+    let select_label: Label = builder
+        .object("select_label")
+        .expect("Could not get the select label object from builder.");
 
-    database_label.set_text("Please select a database to unlock");
+    select_label.set_text("Please select a database to unlock");
 
-    let peak_button: Button = builder
-        .object("peak")
-        .expect("Could not get the peak button from builder.");
-    peak_button.set_halign(Align::End);
-    peak_button.set_valign(Align::End);
+    let select_button: Button = builder
+        .object("select_button")
+        .expect("Could not get the select button from builder.");
+    select_button.set_halign(Align::End);
+    select_button.set_valign(Align::End);
 
     if let Some(db_path) = config.default_db_path {
-        database_label.set_text(&format!("Opening database at {}", &db_path));
+        select_label.set_text(&format!("Opening database at {}", &db_path));
     } else if let Some(db_path) = config.last_db_path {
-        database_label.set_text(&format!("Opening database at {}", &db_path));
+        select_label.set_text(&format!("Opening database at {}", &db_path));
     } else {
-        database_label.set_text("Please select a database to open.");
+        select_label.set_text("Please select a database to open.");
     }
 
     let submit_button: Button = builder
-        .object("submit")
+        .object("submit_button")
         .expect("Could not get the submit button from builder.");
     let password_field: Entry = builder
         .object("password")
         .expect("Could not get the password field from builder.");
-    // Put the entry field in password mode.
-    password_field.set_visibility(false);
-    password_field.set_width_chars(40);
+
+    submit_button.set_halign(Align::End);
+    submit_button.set_valign(Align::End);
 
     // Set application
     window.set_application(Some(app));
 
     password_field.connect_activate(move |password_field| {
         let password = password_field.text();
-        println!("Wow, the password is {}.", &password);
     });
 
     // Connect to "clicked" signal
     submit_button.connect_clicked(move |button| {
         let password = password_field.text();
         println!("Wow, the password is {}.", &password);
-        // Set the label to "Hello World!" after the button has been clicked on
-        // button.set_label("Hello World!");
+        send!(sender, ApplicationEvent::PasswordEntered(password.to_string()));
     });
 
     window.present();
@@ -252,9 +263,12 @@ fn load_css() {
     // Load the CSS file and add it to the provider
     let provider = CssProvider::new();
     provider.load_from_data(include_bytes!("ui/style.css"));
-    provider.load_from_data(include_bytes!("ui/style-dark.css"));
-    provider.load_from_data(include_bytes!("ui/style-hc.css"));
-    provider.load_from_data(include_bytes!("ui/style-hc-dark.css"));
+    // If the current style is dark...
+    // provider.load_from_data(include_bytes!("ui/style-dark.css"));
+    // If the current style is high contrast...
+    // provider.load_from_data(include_bytes!("ui/style-hc.css"));
+    // If the current style is high contrast and dark...
+    // provider.load_from_data(include_bytes!("ui/style-hc-dark.css"));
 
     // Add the provider to the default screen
     StyleContext::add_provider_for_display(
@@ -334,7 +348,11 @@ fn build_alt_ui(app: &Application) {
     window.present();
 }
 
+#[derive(Debug)]
+#[derive(PartialEq)]
+#[derive(Clone)]
 pub enum ApplicationEvent {
+    PasswordEntered(String),
     AddKnownDevice(String),
     PairWithDevice(String),
     UnpairWithDevice(String),

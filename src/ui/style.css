@@ -20,6 +20,24 @@ switch {
   color: magenta;
 }
 
+entry#password_entry {
+  margin: 12pt;
+  min-width: 200pt;
+}
+
+label#select_label {
+  margin: 12pt;
+  min-width: 200pt;
+}
+
+button#select_button {
+  margin: 12pt;
+}
+
+button#submit_button {
+  margin: 12pt;
+}
+
 /*
 #settings_box {
   min-width: 200px;
@@ -32,20 +50,4 @@ switch {
 
 #search_entry {
   margin: 12pt;
-}
-
-#search_entry {
-  margin: 12pt;
-}
-
-.peak_button {
-  margin: 12pt;
-}
-
-.password_entry {
-  margin: 12pt;
-}
-
-combo {
-
 }
