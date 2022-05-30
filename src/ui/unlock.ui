@@ -16,7 +16,6 @@
                 <property name="label" translatable="yes">Unlock your database</property>
                 <property name="single-line-mode">True</property>
                 <property name="ellipsize">end</property>
-                <property name="width-chars">5</property>
                 <style>
                   <class name="title"/>
                 </style>
@@ -29,7 +28,8 @@
             <property name="orientation">horizontal</property>
             <child>
               <object class="GtkLabel" id="select_label">
-              <property name="name">select_label</property>
+                <property name="hexpand">True</property>>
+                <property name="name">select_label</property>
               </object>
             </child>
             <child>
@@ -53,6 +53,7 @@
                 <property name="name">password_entry</property>
                 <property name="placeholder-text" translatable="yes">Enter a Password…</property>
                 <property name="editable">True</property>
+                <property name="hexpand">True</property>>
                 <property name="visibility">False</property>
                 <property name="activates_default">True</property>
               </object>
