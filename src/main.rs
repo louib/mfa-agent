@@ -47,6 +47,7 @@ mod tcp;
 mod utils;
 // mod numpad;
 mod secrets;
+mod proxy_window;
 mod secrets_window;
 
 fn is_proxy() -> bool {
