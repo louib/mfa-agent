@@ -6,6 +6,7 @@
     <property name="title">mfa-agent (proxy)</property>
     <child>
       <object class="GtkButton" id="button">
+        <signal name="clicked" handler="handle_button_clicked"/>
         <property name="label">Press me!</property>
       </object>
     </child>

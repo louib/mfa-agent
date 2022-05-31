@@ -37,6 +37,7 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
+            klass.bind_template_callbacks();
         }
 
         fn instance_init(obj: &InitializingObject<Self>) {
@@ -48,16 +49,20 @@ mod imp {
         fn constructed(&self, obj: &Self::Type) {
             // Call "constructed" on parent
             self.parent_constructed(obj);
-
-            // Connect to "clicked" signal of `button`
-            self.button.connect_clicked(move |button| {
-                // Set the label to "Hello World!" after the button has been clicked on
-                button.set_label("Hello World!");
-            });
         }
     }
 
     impl WidgetImpl for ProxyWindow {}
     impl ApplicationWindowImpl for ProxyWindow {}
     impl WindowImpl for ProxyWindow {}
+
+    #[gtk::template_callbacks]
+    impl ProxyWindow {
+        #[template_callback]
+        fn handle_button_clicked(button: &Button) {
+            // Set the label to "Hello World!" after the button has been clicked on
+            button.set_label("Hello World!");
+        }
+}
+
 }

@@ -184,7 +184,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.add_action(&quit);
 
     // Connect to "activate" signal of `app`
-    app.connect_activate(build_unlock_ui);
+    // app.connect_activate(build_unlock_ui);
+    app.connect_activate(build_proxy_window);
     // app.connect_activate(build_main_ui);
     // app.connect_activate(build_alt_ui);
 
@@ -192,6 +193,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     app.run();
 
     Ok(())
+}
+
+fn build_proxy_window(app: &Application) {
+    let window = crate::proxy_window::ProxyWindow::new(app);
+    window.present();
 }
 
 fn build_unlock_ui(app: &Application) {
