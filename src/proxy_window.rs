@@ -1,8 +1,8 @@
-use glib::Object;
 use glib::subclass::InitializingObject;
-use gtk::{gio, glib, Application, Button, TemplateChild, CompositeTemplate};
+use glib::Object;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
+use gtk::{gio, glib, Application, Button, CompositeTemplate, TemplateChild};
 
 glib::wrapper! {
     pub struct ProxyWindow(ObjectSubclass<imp::ProxyWindow>)
