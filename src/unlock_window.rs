@@ -1,5 +1,5 @@
 use glib::subclass::InitializingObject;
-use glib::Object;
+use glib::{Object, Sender};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, Application, Button, CompositeTemplate, TemplateChild};

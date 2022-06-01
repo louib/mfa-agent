@@ -47,6 +47,7 @@ mod tcp;
 mod utils;
 // mod numpad;
 mod agent_window;
+mod event;
 mod proxy_window;
 mod secrets;
 mod secrets_window;
@@ -200,21 +201,25 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 fn build_agent_window(app: &Application) {
     let window = crate::agent_window::AgentWindow::new(app);
+    window.set_title(Some(&get_window_title()));
     window.present();
 }
 
 fn build_proxy_window(app: &Application) {
     let window = crate::proxy_window::ProxyWindow::new(app);
+    window.set_title(Some(&get_window_title()));
     window.present();
 }
 
 fn build_unlock_window(app: &Application) {
     let window = crate::unlock_window::UnlockWindow::new(app);
+    window.set_title(Some(&get_window_title()));
     window.present();
 }
 
 fn build_unlock_ui(app: &Application) {
-    let (sender, receiver) = glib::MainContext::channel::<ApplicationEvent>(glib::PRIORITY_DEFAULT);
+    let (sender, receiver) =
+        glib::MainContext::channel::<crate::event::ApplicationEvent>(glib::PRIORITY_DEFAULT);
     let receiver = RefCell::new(Some(receiver));
 
     receiver.borrow_mut().take().unwrap().attach(None, |event| {
@@ -259,9 +264,6 @@ fn build_unlock_ui(app: &Application) {
         .object("password")
         .expect("Could not get the password field from builder.");
 
-    submit_button.set_halign(Align::End);
-    submit_button.set_valign(Align::End);
-
     // Set application
     window.set_application(Some(app));
 
@@ -273,7 +275,10 @@ fn build_unlock_ui(app: &Application) {
     submit_button.connect_clicked(move |button| {
         let password = password_field.text();
         println!("Wow, the password is {}.", &password);
-        send!(sender, ApplicationEvent::PasswordEntered(password.to_string()));
+        send!(
+            sender,
+            crate::event::ApplicationEvent::PasswordEntered(password.to_string())
+        );
     });
 
     window.present();
@@ -351,17 +356,6 @@ fn build_main_ui(app: &Application) {
     window.present();
 }
 
-#[derive(Debug)]
-#[derive(PartialEq)]
-#[derive(Clone)]
-pub enum ApplicationEvent {
-    PasswordEntered(String),
-    AddKnownDevice(String),
-    PairWithDevice(String),
-    UnpairWithDevice(String),
-    AllowSecretAccess(String),
-}
-
-async fn handle_app_event(event: &ApplicationEvent) -> Result<(), String> {
+async fn handle_app_event(event: &crate::event::ApplicationEvent) -> Result<(), String> {
     Ok(())
 }
