@@ -1,9 +1,9 @@
 use glib::subclass::InitializingObject;
 use glib::Object;
 use gtk::prelude::*;
-use libadwaita::subclass::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, Application, Button, CompositeTemplate, TemplateChild};
+use libadwaita::subclass::prelude::*;
 
 glib::wrapper! {
     pub struct UnlockWindow(ObjectSubclass<imp::UnlockWindow>)
