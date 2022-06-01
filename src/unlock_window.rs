@@ -1,6 +1,7 @@
 use glib::subclass::InitializingObject;
 use glib::Object;
 use gtk::prelude::*;
+use libadwaita::subclass::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, Application, Button, CompositeTemplate, TemplateChild};
 
@@ -33,7 +34,7 @@ mod imp {
         // `NAME` needs to match `class` attribute of template
         const NAME: &'static str = "UnlockWindow";
         type Type = super::UnlockWindow;
-        type ParentType = gtk::ApplicationWindow;
+        type ParentType = libadwaita::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -55,6 +56,7 @@ mod imp {
     impl WidgetImpl for UnlockWindow {}
     impl ApplicationWindowImpl for UnlockWindow {}
     impl WindowImpl for UnlockWindow {}
+    impl AdwApplicationWindowImpl for UnlockWindow {}
 
     #[gtk::template_callbacks]
     impl UnlockWindow {

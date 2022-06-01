@@ -47,9 +47,9 @@ mod tcp;
 mod utils;
 // mod numpad;
 mod proxy_window;
-mod unlock_window;
 mod secrets;
 mod secrets_window;
+mod unlock_window;
 
 fn is_proxy() -> bool {
     match env::var(crate::consts::IS_PROXY_VAR_NAME) {
