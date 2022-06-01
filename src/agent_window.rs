@@ -26,7 +26,7 @@ mod imp {
     #[template(resource = "/net/louib/mfa-agent/agent_window.ui")]
     pub struct AgentWindow {
         // #[template_child]
-        // pub submit_button: TemplateChild<Button>,
+    // pub submit_button: TemplateChild<Button>,
     }
 
     #[glib::object_subclass]
