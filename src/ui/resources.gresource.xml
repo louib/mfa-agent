@@ -3,6 +3,7 @@
     <gresource prefix="/net/louib/mfa-agent/">
       <file compressed="true" preprocess="xml-stripblanks">keypad.ui</file>
       <file compressed="true" preprocess="xml-stripblanks">proxy_window.ui</file>
+      <file compressed="true" preprocess="xml-stripblanks">unlock_window.ui</file>
       <file compressed="true" preprocess="xml-stripblanks">unlock.ui</file>
     </gresource>
 </gresources>

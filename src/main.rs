@@ -47,6 +47,7 @@ mod tcp;
 mod utils;
 // mod numpad;
 mod proxy_window;
+mod unlock_window;
 mod secrets;
 mod secrets_window;
 
@@ -185,7 +186,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Connect to "activate" signal of `app`
     // app.connect_activate(build_unlock_ui);
-    app.connect_activate(build_proxy_window);
+    // app.connect_activate(build_proxy_window);
+    app.connect_activate(build_unlock_window);
     // app.connect_activate(build_main_ui);
     // app.connect_activate(build_alt_ui);
 
@@ -197,6 +199,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 fn build_proxy_window(app: &Application) {
     let window = crate::proxy_window::ProxyWindow::new(app);
+    window.present();
+}
+
+fn build_unlock_window(app: &Application) {
+    let window = crate::unlock_window::UnlockWindow::new(app);
     window.present();
 }
 

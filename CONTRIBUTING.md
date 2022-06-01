@@ -22,6 +22,7 @@ MFA_AGENT_IS_PROXY=true MFA_AGENT_IS_DEV=true MFA_AGENT_LOG_LEVEL=debug ./target
 * https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes
 * https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1.1/
 * https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1.1/visual-index.html
+* https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/struct.Builder.html#gtkbuilder-ui-definitions
 * https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/
 * https://docs.rs/crate/async-std/latest
 * https://developer.gnome.org/hig/index.html
