@@ -47,6 +47,7 @@ mod tcp;
 mod utils;
 // mod numpad;
 mod proxy_window;
+mod agent_window;
 mod secrets;
 mod secrets_window;
 mod unlock_window;
@@ -187,14 +188,19 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Connect to "activate" signal of `app`
     // app.connect_activate(build_unlock_ui);
     // app.connect_activate(build_proxy_window);
-    app.connect_activate(build_unlock_window);
+    // app.connect_activate(build_unlock_window);
     // app.connect_activate(build_main_ui);
-    // app.connect_activate(build_alt_ui);
+    app.connect_activate(build_agent_window);
 
     // Run the application
     app.run();
 
     Ok(())
+}
+
+fn build_agent_window(app: &Application) {
+    let window = crate::agent_window::AgentWindow::new(app);
+    window.present();
 }
 
 fn build_proxy_window(app: &Application) {
@@ -342,23 +348,6 @@ fn build_main_ui(app: &Application) {
 
     // Add buttons
     window.set_child(Some(&list));
-    window.present();
-}
-
-fn build_alt_ui(app: &Application) {
-    let builder = gtk::Builder::from_string(include_str!("ui/window.ui"));
-
-    // Get window and button from `gtk::Builder`
-    let window: ApplicationWindow = builder
-        .object("window")
-        .expect("Could not get object `window` from builder.");
-    window.set_title(Some(&get_window_title()));
-
-    // Set application
-    window.set_application(Some(app));
-
-    // Add buttons
-    //window.set_child(Some(&list));
     window.present();
 }
 

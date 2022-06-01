@@ -1,7 +1,7 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <requires lib="libadwaita" version="0.1"/>
-  <object class="AdwApplicationWindow" id="window">
+  <template class="AgentWindow" parent="AdwApplicationWindow">
     <property name="modal">True</property>
     <child>
       <object class="GtkToggleButton" id="toggle_pane_button">
@@ -142,5 +142,5 @@
         </child>
       </object>
     </child>
-  </object>
+  </template>
 </interface>
