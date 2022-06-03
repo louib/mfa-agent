@@ -3,11 +3,14 @@
   <requires lib="libadwaita" version="0.1"/>
   <template class="AgentWindow" parent="AdwApplicationWindow">
     <property name="modal">True</property>
+    <property name="title">mfa-agent (remote)</property>
     <child>
       <object class="GtkToggleButton" id="toggle_pane_button">
         <property name="icon-name">sidebar-show-symbolic</property>
         <property name="active">True</property>
       </object>
+    </child>
+    <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <child>
@@ -25,37 +28,34 @@
             <property name="vexpand">True</property>
             <child>
               <object class="AdwViewStackPage">
-                <property name="name">search</property>
-                <property name="title">Search</property>
-                <property name="visible">True</property>
-                <property name="icon-name">edit-find-symbolic</property>
-                <property name="child">
-                  <object class="GtkListBox" id="search_box">
-                    <property name="name">search_box</property>
-                    <style>
-                      <class name="boxed-list"/>
-                    </style>
-                    <child>
-                      <object class="GtkEntry" id="search_entry">
-                        <property name="text">Search for a remote secret...</property>
-                        <style>
-                          <class name="search_entry"/>
-                        </style>
-                      </object>
-                    </child>
-                  </object>
-                </property>
-              </object>
-            </child>
-            <child>
-              <object class="AdwViewStackPage">
                 <property name="name">secrets</property>
                 <property name="title">Secrets</property>
                 <property name="visible">True</property>
                 <property name="icon-name">dialog-password-symbolic</property>
                 <property name="child">
-                  <object class="AdwStatusPage">
-                    <property name="title">Here are your secrets!</property>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="margin-top">12</property>
+                    <property name="margin-bottom">12</property>
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkEntry" id="search_entry">
+                        <property name="placeholder-text" translatable="yes">Search for a secret...</property>
+                        <property name="secondary-icon-name">edit-find-symbolic</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScrolledWindow">
+                        <property name="hscrollbar-policy">never</property>
+                        <property name="min-content-height">360</property>
+                        <property name="vexpand">true</property>
+                        <child>
+                          <object class="GtkListView" id="secrets_list" />
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </property>
               </object>

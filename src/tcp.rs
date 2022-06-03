@@ -11,7 +11,7 @@ static PROXY_LOCALHOST_ADDRESS: &str = "127.0.0.1:34372";
 pub const BUFFER_SIZE: usize = 1024;
 
 pub async fn search(text: String) -> Result<crate::api::SearchResponse, String> {
-    log::info!("Send search request for `{}`", text);
+    log::info!("Sending search request for `{}`", text);
     let mut request: crate::api::Request = crate::api::Request::default();
     request.op = crate::api::OperationType::Search;
     request.payload = match serde_json::to_string(&text) {
@@ -86,19 +86,40 @@ pub async fn start_server() -> Result<(), String> {
 
             // TODO call stream.read_to_string() instead?
             let mut buffer = [0; BUFFER_SIZE];
-            stream.read(&mut buffer).await.unwrap();
+            if let Err(e) = stream.read(&mut buffer).await {
+                log::error!("Error while reading TCP stream: {}", e.to_string());
+                continue;
+            }
 
             let request = match crate::api::Request::from_bytes(&buffer) {
                 Ok(r) => r,
-                Err(e) => return Err(format!("Could not parse request from client: {}", e)),
+                Err(e) => {
+                    log::error!("Error while parsing TCP request: {}", e.to_string());
+                    continue;
+                }
             };
 
             log::info!("Received request {:?}", request.op);
-            let response = crate::api::handle_request(request).await?;
+            let response = match crate::api::handle_request(request).await {
+                Ok(r) => r,
+                Err(e) => {
+                    log::error!("Error while parsing TCP request: {}", e.to_string());
+                    continue;
+                }
+            };
 
-            // TODO call handle_request
-            stream.write(&response.to_bytes()).await.unwrap();
-            stream.flush().await.unwrap();
+            if let Err(e) = stream.write(&response.to_bytes()).await {
+                log::error!(
+                    "Error while writing response back to TCP stream: {}",
+                    e.to_string()
+                );
+                continue;
+            }
+
+            if let Err(e) = stream.flush().await {
+                log::error!("Error while flushing TCP stream: {}", e.to_string());
+                continue;
+            }
         }
     }
     Ok(())

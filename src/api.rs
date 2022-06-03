@@ -205,6 +205,14 @@ pub async fn handle_request(request: crate::api::Request) -> Result<crate::api::
                 .to_vec();
             // response.code = ???
         }
+        crate::api::OperationType::Search => {
+            let op_response = handle_search_request(request).await?;
+            response.payload = serde_json::to_string(&op_response)
+                .map_err(|e| e.to_string())?
+                .as_bytes()
+                .to_vec();
+            // response.code = ???
+        }
         _ => return Err(format!("Operation {:?} not implemented yet.", request.op)),
     }
 

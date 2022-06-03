@@ -150,7 +150,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             crate::connection::ConnectionType::Bluetooth => {
                 tokio::spawn(async {
                     if let Err(e) = crate::bluetooth::start_server().await {
-                        log::error!("Error while starting bluetooth server: {}", e);
+                        log::error!("Error while running bluetooth server: {}", e);
                     } else {
                         log::info!("Bluetooth server has finished serving.");
                     }
@@ -159,7 +159,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             crate::connection::ConnectionType::Tcp => {
                 tokio::spawn(async {
                     if let Err(e) = crate::tcp::start_server().await {
-                        log::error!("Error while starting TCP server: {}", e);
+                        log::error!("Error while running TCP server: {}", e);
                     } else {
                         log::info!("TCP server has finished serving.");
                     }
@@ -186,12 +186,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     app.add_action(&quit);
 
+    if is_proxy() {
+        app.connect_activate(build_proxy_window);
+    } else {
+        app.connect_activate(build_agent_window);
+    }
+
     // Connect to "activate" signal of `app`
     // app.connect_activate(build_unlock_ui);
-    // app.connect_activate(build_proxy_window);
     // app.connect_activate(build_unlock_window);
-    // app.connect_activate(build_main_ui);
-    app.connect_activate(build_agent_window);
 
     // Run the application
     app.run();
@@ -222,10 +225,11 @@ fn build_unlock_ui(app: &Application) {
         glib::MainContext::channel::<crate::event::ApplicationEvent>(glib::PRIORITY_DEFAULT);
     let receiver = RefCell::new(Some(receiver));
 
-    receiver.borrow_mut().take().unwrap().attach(None, |event| {
-        println!("Received application event {:?}", event);
-        return glib::Continue(true);
-    });
+    receiver
+        .borrow_mut()
+        .take()
+        .unwrap()
+        .attach(None, handle_app_event);
 
     let config = crate::config::read_or_init().expect("Could not load config.");
 
@@ -303,59 +307,7 @@ fn load_css() {
     );
 }
 
-fn build_main_ui(app: &Application) {
-    let builder = gtk::Builder::from_string(include_str!("ui/main.ui"));
-
-    // Get window and button from `gtk::Builder`
-    let window: ApplicationWindow = builder
-        .object("window")
-        .expect("Could not get object `window` from builder.");
-    window.set_title(Some(&get_window_title()));
-
-    let list: ListBox = builder
-        .object("list_box")
-        .expect("Could not get object `window` from builder.");
-    let button: Button = builder
-        .object("button")
-        .expect("Could not get object `button` from builder.");
-    let button2: Button = builder
-        .object("button_2")
-        .expect("Could not get object `button` from builder.");
-    let search_entry: Entry = builder
-        .object("search_entry")
-        .expect("Could not get object `search_entry` from builder.");
-    let label: Label = builder
-        .object("label")
-        .expect("Could not get the label object from builder.");
-    label.set_text("Would you accept request for XXXXXXXXXXX");
-
-    // Set application
-    window.set_application(Some(app));
-
-    // Connect to "clicked" signal
-    button.connect_clicked(move |button| {
-        // Set the label to "Hello World!" after the button has been clicked on
-        button.set_label("Hello World!");
-    });
-
-    search_entry.connect_activate(move |entry| {
-        let text = entry.text();
-        log::debug!("Got a query for text {}.", text);
-        tokio::spawn(crate::tcp::search(text.to_string()));
-        // TODO send the request to the server!!!
-    });
-
-    // Connect to "clicked" signal
-    button.connect_clicked(move |button| {
-        // Set the label to "Hello World!" after the button has been clicked on
-        button.set_label("Hello World!");
-    });
-
-    // Add buttons
-    window.set_child(Some(&list));
-    window.present();
-}
-
-async fn handle_app_event(event: &crate::event::ApplicationEvent) -> Result<(), String> {
-    Ok(())
+fn handle_app_event(event: crate::event::ApplicationEvent) -> glib::Continue {
+    println!("Received application event {:?}", event);
+    return glib::Continue(true);
 }

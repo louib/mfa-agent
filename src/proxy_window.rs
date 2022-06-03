@@ -2,7 +2,7 @@ use glib::subclass::InitializingObject;
 use glib::Object;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
-use gtk::{gio, glib, Application, Button, CompositeTemplate, TemplateChild};
+use gtk::{gio, glib, Application, Button, CompositeTemplate, Entry, Switch, TemplateChild};
 
 glib::wrapper! {
     pub struct ProxyWindow(ObjectSubclass<imp::ProxyWindow>)
@@ -25,7 +25,7 @@ mod imp {
     #[template(resource = "/net/louib/mfa-agent/proxy_window.ui")]
     pub struct ProxyWindow {
         #[template_child]
-        pub button: TemplateChild<Button>,
+        pub enable_proxy: TemplateChild<Switch>,
     }
 
     #[glib::object_subclass]
@@ -59,9 +59,27 @@ mod imp {
     #[gtk::template_callbacks]
     impl ProxyWindow {
         #[template_callback]
-        fn handle_button_clicked(button: &Button) {
+        fn handle_enable_proxy_activated(switch: &Switch) {
             // Set the label to "Hello World!" after the button has been clicked on
-            button.set_label("Hello World!");
+            // button.set_label("Hello World!");
+        }
+
+        #[template_callback]
+        async fn handle_search_entry_activated(entry: &Entry) {
+            let text = entry.text();
+            log::debug!("Got a query for text {}.", text);
+            let candidate_secrets = match crate::tcp::search(text.to_string()).await {
+                Ok(s) => s,
+                Err(e) => {
+                    log::warn!("Error while searching for remote secrets: {}", e.to_string());
+                    return;
+                }
+            };
+            println!(
+                "Received {} candidate secrets for the search.",
+                candidate_secrets.len()
+            );
+            // TODO send the request to the server!!!
         }
     }
 }

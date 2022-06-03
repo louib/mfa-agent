@@ -16,8 +16,7 @@
 */
 
 switch {
-  background: yellow;
-  color: magenta;
+  margin: 12pt;
 }
 
 entry#password_entry {
