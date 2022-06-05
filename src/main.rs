@@ -2,7 +2,6 @@
 use std::cell::RefCell;
 use std::env;
 use std::error::Error;
-use std::time::Duration;
 
 use clap::{AppSettings, Parser, Subcommand};
 use futures::{pin_mut, stream::SelectAll, StreamExt};

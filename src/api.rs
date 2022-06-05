@@ -175,8 +175,8 @@ pub type HMACRequest = String;
 pub type HMACResponse = String;
 
 pub struct SanitizedSecret {
-    secretId: String,
-    secretName: String,
+    id: String,
+    name: String,
 }
 
 pub async fn handle_ping_request(request: crate::api::Request) -> Result<crate::api::PingResponse, String> {

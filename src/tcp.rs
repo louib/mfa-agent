@@ -57,7 +57,7 @@ where
     stream
         .write_all(&request.to_bytes())
         .await
-        .map_err(|e| e.to_string());
+        .map_err(|e| e.to_string())?;
 
     // FIXME we should have a bigger buffer here, no?
     let mut buf = vec![0u8; BUFFER_SIZE];
@@ -94,14 +94,16 @@ pub async fn start_server() -> Result<(), String> {
 
             log::debug!("TCP connection opened from {}", stream.peer_addr().unwrap());
 
-            // TODO call stream.read_to_string() instead?
-            let mut buffer = [0; BUFFER_SIZE];
-            if let Err(e) = stream.read(&mut buffer).await {
-                log::error!("Error while reading TCP stream: {}", e.to_string());
-                continue;
-            }
+            let mut buffer: String = "".to_string();
+            let raw_request = match stream.read_to_string(&mut buffer).await {
+                Ok(r) => r,
+                Err(e) => {
+                    log::error!("Error while reading TCP stream: {}", e.to_string());
+                    continue;
+                }
+            };
 
-            let request = match crate::api::Request::from_bytes(&buffer) {
+            let request = match crate::api::Request::from_bytes(&buffer.as_bytes().to_vec()) {
                 Ok(r) => r,
                 Err(e) => {
                     log::error!("Error while parsing TCP request: {}", e.to_string());
