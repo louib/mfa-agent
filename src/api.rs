@@ -190,6 +190,8 @@ pub async fn handle_search_request(request: crate::api::Request) -> Result<crate
     let search_term: crate::api::SearchRequest =
         serde_json::from_str(search_term).map_err(|e| e.to_string())?;
 
+    log::info!("Received search request for {}.", search_term);
+
     Ok(vec!["allo".to_string(), "toi".to_string()])
 }
 
