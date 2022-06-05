@@ -47,7 +47,11 @@ where
         Err(e) => return Err(e.to_string()),
     };
 
-    log::info!("Sending {:?} request of size {}.", request.op, request.payload.len());
+    log::info!(
+        "Sending {:?} request of size {}.",
+        request.op,
+        request.payload.len()
+    );
     // TODO see https://doc.rust-lang.org/std/net/struct.TcpStream.html#method.set_read_timeout
     // TODO see https://doc.rust-lang.org/std/net/struct.TcpStream.html#method.set_write_timeout
     stream
@@ -63,7 +67,11 @@ where
         Ok(r) => r,
         Err(e) => return Err(e),
     };
-    log::info!("Received {:?} response of size {}.", response.code, response.payload.len());
+    log::info!(
+        "Received {:?} response of size {}.",
+        response.code,
+        response.payload.len()
+    );
 
     let response: T = match serde_json::from_str(str::from_utf8(&response.payload).unwrap()) {
         Ok(r) => r,
@@ -101,7 +109,11 @@ pub async fn start_server() -> Result<(), String> {
                 }
             };
 
-            log::info!("Received request {:?} of size {}.", request.op, request.payload.len());
+            log::info!(
+                "Received request {:?} of size {}.",
+                request.op,
+                request.payload.len()
+            );
             let response = match crate::api::handle_request(request).await {
                 Ok(r) => r,
                 Err(e) => {
@@ -109,7 +121,11 @@ pub async fn start_server() -> Result<(), String> {
                     continue;
                 }
             };
-            log::info!("Sending response {:?} of size {}.", response.code, response.payload.len());
+            log::info!(
+                "Sending response {:?} of size {}.",
+                response.code,
+                response.payload.len()
+            );
 
             if let Err(e) = stream.write(&response.to_bytes()).await {
                 log::error!(
