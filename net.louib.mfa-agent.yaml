@@ -31,4 +31,4 @@ modules:
         url: https://github.com/louib/mfa-agent.git
     buildsystem: simple
     build-commands:
-      - OUT_DIR=./src/ui /usr/lib/sdk/rust-nightly/bin/cargo install --force --path . --root /app
+      - /usr/lib/sdk/rust-nightly/bin/cargo install --force --path . --root /app
