@@ -8,7 +8,6 @@ use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 
 static PROXY_LOCALHOST_ADDRESS: &str = "127.0.0.1:34372";
-pub const BUFFER_SIZE: usize = 1024;
 
 pub async fn search(text: String) -> Result<crate::api::SearchResponse, String> {
     log::info!("Sending search request for `{}`", text);
@@ -22,6 +21,7 @@ pub async fn search(text: String) -> Result<crate::api::SearchResponse, String> 
         Ok(r) => r,
         Err(e) => return Err(e),
     };
+    log::info!("Received search response {:?}", response);
 
     Ok(response)
 }
@@ -58,12 +58,16 @@ where
         .write_all(&request.to_bytes())
         .await
         .map_err(|e| e.to_string())?;
+    // stream.flush().await.map_err(|e| e.to_string())?;
 
-    // FIXME we should have a bigger buffer here, no?
-    let mut buf = vec![0u8; BUFFER_SIZE];
-    let n = stream.read(&mut buf).await.map_err(|e| e.to_string());
+    println!("Avant de read_to_string?");
+    let mut buffer: String = "".to_string();
+    stream.read_to_string(&mut buffer).await.map_err(|e| e.to_string())?;
+    println!("Apres de read_to_string? buffer.len() == {}", buffer.len());
+    // stream.shutdown(std::net::Shutdown::Both).map_err(|e| e.to_string())?;
+    println!("Apres le shutdown");
 
-    let response = match crate::api::Response::from_bytes(&buf) {
+    let response = match crate::api::Response::from_bytes(&buffer.as_bytes().to_vec()) {
         Ok(r) => r,
         Err(e) => return Err(e),
     };
@@ -95,7 +99,7 @@ pub async fn start_server() -> Result<(), String> {
             log::debug!("TCP connection opened from {}", stream.peer_addr().unwrap());
 
             let mut buffer: String = "".to_string();
-            let raw_request = match stream.read_to_string(&mut buffer).await {
+            match stream.read_to_string(&mut buffer).await {
                 Ok(r) => r,
                 Err(e) => {
                     log::error!("Error while reading TCP stream: {}", e.to_string());
@@ -129,7 +133,7 @@ pub async fn start_server() -> Result<(), String> {
                 response.payload.len()
             );
 
-            if let Err(e) = stream.write(&response.to_bytes()).await {
+            if let Err(e) = stream.write_all(&response.to_bytes()).await {
                 log::error!(
                     "Error while writing response back to TCP stream: {}",
                     e.to_string()
