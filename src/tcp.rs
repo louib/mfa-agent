@@ -58,17 +58,16 @@ where
         .write_all(&request.to_bytes())
         .await
         .map_err(|e| e.to_string())?;
-    // stream.flush().await.map_err(|e| e.to_string())?;
+    stream.flush().await.map_err(|e| e.to_string())?;
+    stream
+        .shutdown(std::net::Shutdown::Write)
+        .map_err(|e| e.to_string())?;
 
-    println!("Avant de read_to_string?");
     let mut buffer: String = "".to_string();
     stream
         .read_to_string(&mut buffer)
         .await
         .map_err(|e| e.to_string())?;
-    println!("Apres de read_to_string? buffer.len() == {}", buffer.len());
-    // stream.shutdown(std::net::Shutdown::Both).map_err(|e| e.to_string())?;
-    println!("Apres le shutdown");
 
     let response = match crate::api::Response::from_bytes(&buffer.as_bytes().to_vec()) {
         Ok(r) => r,
