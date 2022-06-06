@@ -110,9 +110,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // std::process::exit(run::<crate::numpad::NumPad>());
 
-    // crate::bluetooth::advertise().await?;
-    //
-    //
     if is_proxy() {
         log::info!("Running in proxy mode!");
 
