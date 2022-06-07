@@ -76,7 +76,6 @@ fn get_connection_type() -> crate::connection::ConnectionType {
     }
 }
 
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     logger::init();
@@ -157,7 +156,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     log::info!("Building GTK application {}", crate::app::get_app_id());
     // Create a new application
-    let app = Application::builder().application_id(crate::app::get_app_id()).build();
+    let app = Application::builder()
+        .application_id(crate::app::get_app_id())
+        .build();
 
     let quit = gio::SimpleAction::new("quit", None);
     quit.connect_activate(glib::clone!(@weak app => move |_action, _parameter| {
