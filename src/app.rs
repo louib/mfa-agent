@@ -4,12 +4,12 @@ use glib::subclass::InitializingObject;
 use glib::{Object, Sender};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
-use gtk::{gio, glib, Application, CssProvider, StyleContext, Button, CompositeTemplate, TemplateChild};
+use gtk::{gio, glib, Application, Button, CompositeTemplate, CssProvider, StyleContext, TemplateChild};
 use libadwaita::gdk::Display;
 use libadwaita::subclass::prelude::*;
 
-use crate::proxy_window::ProxyWindow;
 use crate::agent_window::AgentWindow;
+use crate::proxy_window::ProxyWindow;
 
 glib::wrapper! {
     pub struct MFAAgentApplication(ObjectSubclass<imp::MFAAgentApplication>)
@@ -115,7 +115,6 @@ fn load_css() {
         gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
 }
-
 
 fn build_unlock_window(app: &Application) {
     let window = crate::unlock_window::UnlockWindow::new(app);
