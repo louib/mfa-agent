@@ -3,12 +3,9 @@ use std::env;
 use std::error::Error;
 
 use clap::{AppSettings, Parser, Subcommand};
-use futures::{pin_mut, stream::SelectAll, StreamExt};
 use gio::prelude::*;
 use glib::{Receiver, Sender};
-use gtk::prelude::WidgetExt;
 use gtk::prelude::*;
-use gtk::subclass::prelude::*;
 use gtk::{
     Align, Application, ApplicationWindow, Box as GtkBox, Button, CssProvider, Entry, Label, ListBox,
     StyleContext, Switch,
@@ -52,23 +49,6 @@ mod secrets;
 mod secrets_window;
 mod unlock_window;
 
-fn is_proxy() -> bool {
-    match env::var(crate::consts::IS_PROXY_VAR_NAME) {
-        Ok(v) => v == "true",
-        Err(_) => false,
-    }
-}
-
-fn get_window_title() -> String {
-    let mut app_title = crate::consts::APP_NAME.to_owned() + " ";
-    if is_proxy() {
-        app_title += crate::consts::PROXY_TITLE_SUFFIX;
-    } else {
-        app_title += crate::consts::AGENT_TITLE_SUFFIX;
-    }
-    app_title
-}
-
 fn get_connection_type() -> crate::connection::ConnectionType {
     match env::var(crate::consts::CONNECTION_TYPE_VAR_NAME) {
         Ok(v) => crate::connection::ConnectionType::from_string(&v).unwrap(),
@@ -97,7 +77,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // std::process::exit(run::<crate::numpad::NumPad>());
 
-    if is_proxy() {
+    if crate::app::is_proxy() {
         log::info!("Running in proxy mode!");
 
         match connection_type {
@@ -155,54 +135,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     log::info!("Building GTK application {}", crate::app::get_app_id());
-    // Create a new application
-    let app = Application::builder()
-        .application_id(crate::app::get_app_id())
-        .build();
-
-    let quit = gio::SimpleAction::new("quit", None);
-    quit.connect_activate(glib::clone!(@weak app => move |_action, _parameter| {
-        app.quit();
-    }));
-    app.connect_startup(|app| {
-        load_css();
-        app.set_accels_for_action("app.quit", &["<Primary>Q"]);
-    });
-
-    app.add_action(&quit);
-
-    if is_proxy() {
-        app.connect_activate(build_proxy_window);
-    } else {
-        app.connect_activate(build_agent_window);
-    }
-
-    // Connect to "activate" signal of `app`
-    // app.connect_activate(build_unlock_ui);
-    // app.connect_activate(build_unlock_window);
-
-    // Run the application
-    app.run();
+    crate::app::MFAAgentApplication::run();
 
     Ok(())
-}
-
-fn build_agent_window(app: &Application) {
-    let window = crate::agent_window::AgentWindow::new(app);
-    window.set_title(Some(&get_window_title()));
-    window.present();
-}
-
-fn build_proxy_window(app: &Application) {
-    let window = crate::proxy_window::ProxyWindow::new(app);
-    window.set_title(Some(&get_window_title()));
-    window.present();
-}
-
-fn build_unlock_window(app: &Application) {
-    let window = crate::unlock_window::UnlockWindow::new(app);
-    window.set_title(Some(&get_window_title()));
-    window.present();
 }
 
 fn build_unlock_ui(app: &Application) {
@@ -224,7 +159,7 @@ fn build_unlock_ui(app: &Application) {
     let window: ApplicationWindow = builder
         .object("window")
         .expect("Could not get object `window` from builder.");
-    window.set_title(Some(&get_window_title()));
+    window.set_title(Some(&crate::app::get_window_title()));
 
     let select_label: Label = builder
         .object("select_label")
@@ -271,25 +206,6 @@ fn build_unlock_ui(app: &Application) {
     });
 
     window.present();
-}
-
-fn load_css() {
-    // Load the CSS file and add it to the provider
-    let provider = CssProvider::new();
-    provider.load_from_data(include_bytes!("ui/style.css"));
-    // If the current style is dark...
-    // provider.load_from_data(include_bytes!("ui/style-dark.css"));
-    // If the current style is high contrast...
-    // provider.load_from_data(include_bytes!("ui/style-hc.css"));
-    // If the current style is high contrast and dark...
-    // provider.load_from_data(include_bytes!("ui/style-hc-dark.css"));
-
-    // Add the provider to the default screen
-    StyleContext::add_provider_for_display(
-        &Display::default().expect("Could not connect to a display."),
-        &provider,
-        gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
-    );
 }
 
 fn handle_app_event(event: crate::event::ApplicationEvent) -> glib::Continue {

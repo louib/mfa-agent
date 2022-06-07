@@ -13,7 +13,7 @@ glib::wrapper! {
 }
 
 impl AgentWindow {
-    pub fn new(app: &Application) -> Self {
+    pub fn new(app: &crate::app::MFAAgentApplication) -> Self {
         // Create new window
         Object::new(&[("application", app)]).expect("Failed to create AgentWindow")
     }
