@@ -1,3 +1,5 @@
+use std::env;
+
 use glib::subclass::InitializingObject;
 use glib::{Object, Sender};
 use gtk::prelude::*;
@@ -44,5 +46,18 @@ mod imp {
         fn activate(&self, app: &Self::Type) {
             let app = app.downcast_ref::<super::MFAAgentApplication>().unwrap();
         }
+    }
+}
+
+pub fn get_app_id() -> &'static str {
+    match env::var(crate::consts::IS_DEV_VAR_NAME) {
+        Ok(v) => {
+            if v == "true" {
+                crate::consts::DEV_APP_ID
+            } else {
+                crate::consts::APP_ID
+            }
+        }
+        Err(_) => crate::consts::APP_ID,
     }
 }
