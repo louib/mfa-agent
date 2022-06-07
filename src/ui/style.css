@@ -43,10 +43,6 @@ button#submit_button {
 }
 */
 
-#enable_agent_row switch {
-  background: magenta;
-}
-
 #search_entry {
   margin: 12pt;
 }
