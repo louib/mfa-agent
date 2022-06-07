@@ -9,14 +9,25 @@ use libadwaita::subclass::prelude::*;
 
 glib::wrapper! {
     pub struct MFAAgentApplication(ObjectSubclass<imp::MFAAgentApplication>)
-        @extends gtk::ApplicationWindow, gtk::Window, gtk::Widget,
-        @implements gio::ActionGroup, gio::ActionMap, gtk::Accessible, gtk::Buildable,
-                    gtk::ConstraintTarget, gtk::Native, gtk::Root, gtk::ShortcutManager;
+        @extends gio::Application, gtk::Application, libadwaita::Application,
+        @implements gio::ActionMap, gio::ActionGroup;
+
 }
 
 impl MFAAgentApplication {
     pub fn new(app: &Application) -> Self {
         Object::new(&[("application", app)]).expect("Failed to create MFAAgentApplication")
+    }
+
+    pub fn run() {
+        let app = glib::Object::new::<MFAAgentApplication>(&[
+            ("application-id", &Some(get_app_id())),
+            ("flags", &gio::ApplicationFlags::empty()),
+            ("resource-base-path", &Some("/net/louib/mfa-agent/")),
+        ])
+        .unwrap();
+
+        app.run();
     }
 }
 
@@ -38,7 +49,6 @@ mod imp {
     }
 
     impl ObjectImpl for MFAAgentApplication {}
-    impl WidgetImpl for MFAAgentApplication {}
     impl GtkApplicationImpl for MFAAgentApplication {}
     impl AdwApplicationImpl for MFAAgentApplication {}
 
