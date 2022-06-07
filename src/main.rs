@@ -37,6 +37,7 @@ struct MFAAgent {
 }
 
 mod api;
+mod app;
 mod bluetooth;
 mod config;
 mod connection;
