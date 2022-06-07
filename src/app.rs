@@ -10,6 +10,7 @@ use libadwaita::subclass::prelude::*;
 
 use crate::agent_window::AgentWindow;
 use crate::proxy_window::ProxyWindow;
+use crate::unlock_window::UnlockWindow;
 
 glib::wrapper! {
     pub struct MFAAgentApplication(ObjectSubclass<imp::MFAAgentApplication>)
@@ -72,6 +73,10 @@ mod imp {
             app.add_action(&quit);
 
             if is_proxy() {
+                // let window = UnlockWindow::new(app);
+                // window.set_title(Some(&get_window_title()));
+                // window.present();
+
                 let window = ProxyWindow::new(app);
                 window.set_title(Some(&get_window_title()));
                 window.present();
@@ -114,12 +119,6 @@ fn load_css() {
         &provider,
         gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
-}
-
-fn build_unlock_window(app: &Application) {
-    let window = crate::unlock_window::UnlockWindow::new(app);
-    window.set_title(Some(&get_window_title()));
-    window.present();
 }
 
 pub fn is_proxy() -> bool {
