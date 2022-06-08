@@ -6,20 +6,9 @@ use clap::{AppSettings, Parser, Subcommand};
 use gio::prelude::*;
 use glib::{Receiver, Sender};
 use gtk::prelude::*;
-use gtk::{
-    Align, Application, ApplicationWindow, Box as GtkBox, Button, CssProvider, Entry, Label, ListBox,
-    StyleContext, Switch,
-};
-use gtk_macros::send;
-use libadwaita::gdk::Display;
 use libadwaita::prelude::*;
 use libadwaita::subclass::prelude::*;
-use log::error;
-use tokio::{
-    io::{AsyncBufReadExt, BufReader},
-    time::sleep,
-};
-// use vgtk::run;
+// use gtk_macros::send;
 
 #[derive(Parser)]
 #[clap(name = crate::consts::APP_NAME)]
@@ -134,13 +123,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         };
     }
 
-    log::info!("Building GTK application {}", crate::app::get_app_id());
-    crate::app::MFAAgentApplication::run();
-
-    Ok(())
-}
-
-fn build_unlock_ui(app: &Application) {
     let (sender, receiver) =
         glib::MainContext::channel::<crate::event::ApplicationEvent>(glib::PRIORITY_DEFAULT);
     let receiver = RefCell::new(Some(receiver));
@@ -151,61 +133,10 @@ fn build_unlock_ui(app: &Application) {
         .unwrap()
         .attach(None, handle_app_event);
 
-    let config = crate::config::read_or_init().expect("Could not load config.");
+    log::info!("Building GTK application {}", crate::app::get_app_id());
+    crate::app::MFAAgentApplication::run();
 
-    let builder = gtk::Builder::from_string(include_str!("ui/unlock.ui"));
-
-    // Get window and button from `gtk::Builder`
-    let window: ApplicationWindow = builder
-        .object("window")
-        .expect("Could not get object `window` from builder.");
-    window.set_title(Some(&crate::app::get_window_title()));
-
-    let select_label: Label = builder
-        .object("select_label")
-        .expect("Could not get the select label object from builder.");
-
-    select_label.set_text("Please select a database to unlock");
-
-    let select_button: Button = builder
-        .object("select_button")
-        .expect("Could not get the select button from builder.");
-    select_button.set_halign(Align::End);
-    select_button.set_valign(Align::End);
-
-    if let Some(db_path) = config.default_db_path {
-        select_label.set_text(&format!("Opening database at {}", &db_path));
-    } else if let Some(db_path) = config.last_db_path {
-        select_label.set_text(&format!("Opening database at {}", &db_path));
-    } else {
-        select_label.set_text("Please select a database to open.");
-    }
-
-    let submit_button: Button = builder
-        .object("submit_button")
-        .expect("Could not get the submit button from builder.");
-    let password_field: Entry = builder
-        .object("password")
-        .expect("Could not get the password field from builder.");
-
-    // Set application
-    window.set_application(Some(app));
-
-    password_field.connect_activate(move |password_field| {
-        let password = password_field.text();
-    });
-
-    // Connect to "clicked" signal
-    submit_button.connect_clicked(move |button| {
-        let password = password_field.text();
-        println!("Wow, the password is {}.", &password);
-        send!(
-            sender,
-            crate::event::ApplicationEvent::PasswordEntered(password.to_string())
-        );
-    });
-
-    window.present();
+    Ok(())
 }
 
 fn handle_app_event(event: crate::event::ApplicationEvent) -> glib::Continue {

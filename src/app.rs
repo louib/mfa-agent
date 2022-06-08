@@ -34,11 +34,31 @@ impl MFAAgentApplication {
 
         app.run();
     }
+
+    pub fn open_database(&self) {
+        let unlock_window = self.active_window().unwrap().close();
+        // self.remove_window(&unlock_window);
+
+        println!("Opening database.");
+        let window = AgentWindow::new(self);
+        window.set_title(Some(&get_window_title()));
+        window.present();
+    }
+}
+
+impl Default for MFAAgentApplication {
+    fn default() -> Self {
+        gio::Application::default()
+            .expect("Could not get the running MFAAgentApplication instance")
+            .downcast()
+            .unwrap()
+    }
 }
 
 mod imp {
     use super::*;
 
+    #[derive(Default)]
     pub struct MFAAgentApplication {}
 
     #[glib::object_subclass]
@@ -73,13 +93,13 @@ mod imp {
             app.add_action(&quit);
 
             if is_proxy() {
-                // let window = UnlockWindow::new(app);
+                let mut unlock_window = UnlockWindow::new(app);
+                unlock_window.set_title(Some(&get_window_title()));
+                unlock_window.present();
+
+                // let window = ProxyWindow::new(app);
                 // window.set_title(Some(&get_window_title()));
                 // window.present();
-
-                let window = ProxyWindow::new(app);
-                window.set_title(Some(&get_window_title()));
-                window.present();
             } else {
                 let window = AgentWindow::new(app);
                 window.set_title(Some(&get_window_title()));

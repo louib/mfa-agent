@@ -2,12 +2,12 @@ use glib::subclass::InitializingObject;
 use glib::{Object, Sender};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
-use gtk::{gio, glib, Application, Button, CompositeTemplate, TemplateChild};
+use gtk::{gio, glib, Application, Button, CompositeTemplate, Entry, TemplateChild};
 use libadwaita::subclass::prelude::*;
 
 glib::wrapper! {
     pub struct UnlockWindow(ObjectSubclass<imp::UnlockWindow>)
-        @extends gtk::ApplicationWindow, gtk::Window, gtk::Widget,
+        @extends libadwaita::ApplicationWindow, gtk::ApplicationWindow, gtk::Window, gtk::Widget,
         @implements gio::ActionGroup, gio::ActionMap, gtk::Accessible, gtk::Buildable,
                     gtk::ConstraintTarget, gtk::Native, gtk::Root, gtk::ShortcutManager;
 }
@@ -27,6 +27,9 @@ mod imp {
     pub struct UnlockWindow {
         #[template_child]
         pub submit_button: TemplateChild<Button>,
+
+        #[template_child]
+        pub password_entry: TemplateChild<Entry>,
     }
 
     #[glib::object_subclass]
@@ -61,9 +64,13 @@ mod imp {
     #[gtk::template_callbacks]
     impl UnlockWindow {
         #[template_callback]
-        fn handle_button_clicked(button: &Button) {
+        fn handle_password_submit(&self, button: &Button) {
             // Set the label to "Hello World!" after the button has been clicked on
-            button.set_label("Hello World!");
+            let app = crate::app::MFAAgentApplication::default();
+
+            let password = self.password_entry.text();
+            println!("The current password is {}", password);
+            app.open_database();
         }
     }
 }
