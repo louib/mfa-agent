@@ -5,9 +5,9 @@ use glib::{Object, Sender};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, Application, Button, CompositeTemplate, CssProvider, StyleContext, TemplateChild};
+use keepass::Database;
 use libadwaita::gdk::Display;
 use libadwaita::subclass::prelude::*;
-use keepass::Database;
 
 use crate::agent_window::AgentWindow;
 use crate::proxy_window::ProxyWindow;

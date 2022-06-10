@@ -5,8 +5,8 @@ use glib::Object;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, Application, Button, CompositeTemplate, TemplateChild};
-use libadwaita::subclass::prelude::*;
 use keepass::Database;
+use libadwaita::subclass::prelude::*;
 
 glib::wrapper! {
     pub struct AgentWindow(ObjectSubclass<imp::AgentWindow>)
@@ -58,7 +58,9 @@ mod imp {
         }
 
         fn new() -> Self {
-            Self { db: RefCell::new(None) }
+            Self {
+                db: RefCell::new(None),
+            }
         }
     }
 
