@@ -29,7 +29,7 @@ impl MFAAgentApplication {
         let app = glib::Object::new::<MFAAgentApplication>(&[
             ("application-id", &Some(get_app_id())),
             ("flags", &gio::ApplicationFlags::empty()),
-            ("resource-base-path", &Some("/net/louib/mfa-agent/")),
+            ("resource-base-path", &Some(crate::consts::RESOURCES_NAMESPACE)),
         ])
         .unwrap();
 

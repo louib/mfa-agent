@@ -11,7 +11,7 @@ The `MFA_AGENT_IS_DEV` and `MFA_AGENT_LOG_LEVEL` environment variables can be us
 development:
 
 ```
-MFA_AGENT_IS_PROXY=true MFA_AGENT_IS_DEV=true MFA_AGENT_LOG_LEVEL=debug ./target/debug/mfa-agent
+MFA_AGENT_IS_DEV=true MFA_AGENT_LOG_LEVEL=debug ./target/debug/mfa-agent
 ```
 
 ## References

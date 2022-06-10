@@ -1,4 +1,5 @@
 pub const APP_ID: &str = "net.louib.mfa-agent";
+pub const RESOURCES_NAMESPACE: &str = "/net/louib/mfa-agent/";
 pub const DEV_APP_ID: &str = "net.louib.mfa-agent-dev";
 pub const APP_NAME: &str = "mfa-agent";
 pub const APP_TITLE: &str = "MFA Agent";
