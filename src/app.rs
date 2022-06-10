@@ -5,6 +5,7 @@ use glib::{Object, Sender};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, Application, Button, CompositeTemplate, CssProvider, StyleContext, TemplateChild};
+use keepass::Database;
 use libadwaita::gdk::Display;
 use libadwaita::subclass::prelude::*;
 
@@ -35,13 +36,13 @@ impl MFAAgentApplication {
         app.run();
     }
 
-    pub fn open_database(&self) {
+    pub fn set_database(&mut self, db: Database) {
         let unlock_window = self.active_window().unwrap().close();
-        // self.remove_window(&unlock_window);
 
         println!("Opening database.");
         let window = AgentWindow::new(self);
         window.set_title(Some(&get_window_title()));
+        window.set_database(db);
         window.present();
     }
 }
@@ -59,6 +60,7 @@ mod imp {
     use super::*;
 
     #[derive(Default)]
+    #[derive(Debug)]
     pub struct MFAAgentApplication {}
 
     #[glib::object_subclass]
@@ -67,10 +69,6 @@ mod imp {
         const NAME: &'static str = "MFAAgentApplication";
         type Type = super::MFAAgentApplication;
         type ParentType = libadwaita::Application;
-
-        fn new() -> Self {
-            Self {}
-        }
     }
 
     impl ObjectImpl for MFAAgentApplication {}

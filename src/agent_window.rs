@@ -1,8 +1,11 @@
+use std::cell::RefCell;
+
 use glib::subclass::InitializingObject;
 use glib::Object;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, Application, Button, CompositeTemplate, TemplateChild};
+use keepass::Database;
 use libadwaita::subclass::prelude::*;
 
 glib::wrapper! {
@@ -17,14 +20,23 @@ impl AgentWindow {
         // Create new window
         Object::new(&[("application", app)]).expect("Failed to create AgentWindow")
     }
+
+    pub fn set_database(&self, db: Database) {
+        self.imp().db.replace(Some(db));
+
+        // Update the secrets view with the secrets in the database!
+    }
 }
 
 mod imp {
     use super::*;
 
-    #[derive(CompositeTemplate, Default)]
+    #[derive(CompositeTemplate)]
+    #[derive(Default)]
+    #[derive(Debug)]
     #[template(resource = "/net/louib/mfa-agent/agent_window.ui")]
     pub struct AgentWindow {
+        pub db: RefCell<Option<Database>>,
         // #[template_child]
         // pub submit_button: TemplateChild<Button>,
     }
@@ -43,6 +55,12 @@ mod imp {
 
         fn instance_init(obj: &InitializingObject<Self>) {
             obj.init_template();
+        }
+
+        fn new() -> Self {
+            Self {
+                db: RefCell::new(None),
+            }
         }
     }
 

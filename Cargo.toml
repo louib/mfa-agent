@@ -46,6 +46,8 @@ async-std = "1.11.0"
 clap = { version = "3", features = ["derive"] }
 uuid = { version = "1", features = ["v4"] }
 
+keepass = "0.4"
+
 [build-dependencies]
 # Needed in the build dependencies to compile the gresources
 gtk = { version = "0.4", package = "gtk4" }

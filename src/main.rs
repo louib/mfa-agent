@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate gtk_macros;
+
 use std::cell::RefCell;
 use std::env;
 use std::error::Error;

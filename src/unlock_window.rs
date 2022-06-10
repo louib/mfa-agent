@@ -1,8 +1,13 @@
+use std::env;
+use std::fs::File;
+use std::path::Path;
+
 use glib::subclass::InitializingObject;
 use glib::{Object, Sender};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, Application, Button, CompositeTemplate, Entry, TemplateChild};
+use keepass::Database;
 use libadwaita::subclass::prelude::*;
 
 glib::wrapper! {
@@ -65,12 +70,36 @@ mod imp {
     impl UnlockWindow {
         #[template_callback]
         fn handle_password_submit(&self, button: &Button) {
-            // Set the label to "Hello World!" after the button has been clicked on
-            let app = crate::app::MFAAgentApplication::default();
-
             let password = self.password_entry.text();
-            println!("The current password is {}", password);
-            app.open_database();
+
+            let open_database_future = async move {
+                // let imp = this.imp();
+
+                let db_path = get_db_path();
+
+                let path = std::path::Path::new(&db_path);
+                let db = match Database::open(&mut File::open(path).unwrap(), Some(&password), None) {
+                    Ok(db) => db,
+                    Err(e) => {
+                        // TODO this should be a UI message instead.
+                        log::warn!("Could not open database.");
+                        return;
+                    }
+                };
+
+                println!("There are {} entries in this database.", db.root.children.len());
+
+                let mut app = crate::app::MFAAgentApplication::default();
+                app.set_database(db);
+            };
+            spawn!(open_database_future);
         }
+    }
+}
+
+fn get_db_path() -> String {
+    match env::home_dir() {
+        Some(d) => format!("{}/mfa-agent.kdbx", d.to_str().unwrap()),
+        None => "./mfa-agent.kdbx".to_string(),
     }
 }
