@@ -1,14 +1,14 @@
+use std::env;
 use std::fs::File;
 use std::path::Path;
-use std::env;
 
 use glib::subclass::InitializingObject;
 use glib::{Object, Sender};
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use gtk::{gio, glib, Application, Button, CompositeTemplate, Entry, TemplateChild};
+use keepass::Database;
 use libadwaita::subclass::prelude::*;
-use keepass::{Database};
 
 glib::wrapper! {
     pub struct UnlockWindow(ObjectSubclass<imp::UnlockWindow>)
@@ -77,19 +77,14 @@ mod imp {
 
                 let db_path = get_db_path();
 
-
                 let path = std::path::Path::new(&db_path);
-                let db = match Database::open(
-                    &mut File::open(path).unwrap(),
-                    Some(&password),
-                    None
-                ) {
+                let db = match Database::open(&mut File::open(path).unwrap(), Some(&password), None) {
                     Ok(db) => db,
                     Err(e) => {
                         // TODO this should be a UI message instead.
                         log::warn!("Could not open database.");
                         return;
-                    },
+                    }
                 };
 
                 println!("There are {} entries in this database.", db.root.children.len());
