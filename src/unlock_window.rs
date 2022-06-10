@@ -70,30 +70,34 @@ mod imp {
     impl UnlockWindow {
         #[template_callback]
         fn handle_password_submit(&self, button: &Button) {
-            // Set the label to "Hello World!" after the button has been clicked on
-            let app = crate::app::MFAAgentApplication::default();
-
             let password = self.password_entry.text();
 
-            let db_path = get_db_path();
-            let path = std::path::Path::new(&db_path);
-            let db = match Database::open(
-                &mut File::open(path).unwrap(),
-                Some(&password),
-                None
-            ) {
-                Ok(db) => db,
-                Err(e) => {
-                    // TODO this should be a UI message instead.
-                    log::warn!("Could not open database.");
-                    return;
-                },
+            let open_database_future = async move {
+                // let imp = this.imp();
+
+                let db_path = get_db_path();
+
+
+                let path = std::path::Path::new(&db_path);
+                let db = match Database::open(
+                    &mut File::open(path).unwrap(),
+                    Some(&password),
+                    None
+                ) {
+                    Ok(db) => db,
+                    Err(e) => {
+                        // TODO this should be a UI message instead.
+                        log::warn!("Could not open database.");
+                        return;
+                    },
+                };
+
+                println!("There are {} entries in this database.", db.root.children.len());
+
+                let app = crate::app::MFAAgentApplication::default();
+                app.open_database();
             };
-
-            println!("There are {} entries in this database.", db.root.children.len());
-
-            println!("The current password is {}", password);
-            app.open_database();
+            spawn!(open_database_future);
         }
     }
 }
