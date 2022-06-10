@@ -89,8 +89,8 @@ mod imp {
 
                 println!("There are {} entries in this database.", db.root.children.len());
 
-                let app = crate::app::MFAAgentApplication::default();
-                app.open_database();
+                let mut app = crate::app::MFAAgentApplication::default();
+                app.set_database(db);
             };
             spawn!(open_database_future);
         }
