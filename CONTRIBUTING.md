@@ -31,5 +31,7 @@ MFA_AGENT_IS_DEV=true MFA_AGENT_LOG_LEVEL=debug ./target/debug/mfa-agent
 * https://docs.rs/bluer/0.15.0/bluer/
 * https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/
 * https://github.com/diwic/dbus-rs#readme
+* https://fidoalliance.org/specs/u2f-specs-master/fido-u2f-hid-protocol.html
+* https://developers.yubico.com/U2F/Libraries/Client_error_codes.html
 * https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax
 * The Comparison of Rust Keepass Libraries at https://crates.io/crates/kdbx-rs
