@@ -38,7 +38,6 @@ mod agent_window;
 mod event;
 mod proxy_window;
 mod secrets;
-mod secrets_window;
 mod unlock_window;
 
 fn get_connection_type() -> crate::connection::ConnectionType {
