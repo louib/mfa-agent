@@ -92,17 +92,13 @@ mod imp {
             app.add_action(&quit);
 
             if is_proxy() {
+                let window = ProxyWindow::new(app);
+                window.set_title(Some(&get_window_title()));
+                window.present();
+            } else {
                 let mut unlock_window = UnlockWindow::new(app);
                 unlock_window.set_title(Some(&get_window_title()));
                 unlock_window.present();
-
-                // let window = ProxyWindow::new(app);
-                // window.set_title(Some(&get_window_title()));
-                // window.present();
-            } else {
-                let window = AgentWindow::new(app);
-                window.set_title(Some(&get_window_title()));
-                window.present();
             }
         }
     }
