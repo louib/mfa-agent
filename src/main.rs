@@ -33,12 +33,12 @@ mod bluetooth;
 mod config;
 mod connection;
 mod consts;
+mod event;
 mod logger;
+mod secrets;
 mod tcp;
 mod utils;
-mod event;
 mod widgets;
-mod secrets;
 
 fn get_connection_type() -> crate::connection::ConnectionType {
     match env::var(crate::consts::CONNECTION_TYPE_VAR_NAME) {
