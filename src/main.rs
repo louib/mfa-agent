@@ -11,17 +11,20 @@ use glib::{Receiver, Sender};
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 use libadwaita::subclass::prelude::*;
-// use gtk_macros::send;
 
 #[derive(Parser)]
 #[clap(name = crate::consts::APP_NAME)]
-// #[clap(author = "louib")]
+#[clap(author = "louib")]
 #[clap(version = env!("CARGO_PKG_VERSION"))]
 #[clap(about = "Multi-Factor authentication agent for Linux.", long_about = None)]
 struct MFAAgent {
     /// Run the agent as a proxy
     #[clap(long, short)]
     proxy: bool,
+
+    /// Prompt for password on the command line
+    #[clap(long)]
+    password_prompt: bool,
 }
 
 mod api;
@@ -51,7 +54,7 @@ fn get_connection_type() -> crate::connection::ConnectionType {
 async fn main() -> Result<(), Box<dyn Error>> {
     logger::init();
 
-    // let args = MFAAgent::parse();
+    let args = MFAAgent::parse();
 
     if let Err(e) = gio::resources_register_include!("ui.gresource") {
         panic!("Failed to register resources: {}.", e);
@@ -66,9 +69,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let connection_type = get_connection_type();
     log::info!("Connecting over {}", connection_type.to_string());
 
-    // std::process::exit(run::<crate::numpad::NumPad>());
-
-    if crate::app::is_proxy() {
+    if crate::app::is_proxy() || args.proxy {
         log::info!("Running in proxy mode!");
 
         match connection_type {
@@ -137,6 +138,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     log::info!("Building GTK application {}", crate::app::get_app_id());
     crate::app::MFAAgentApplication::run();
+    log::info!("GTK application has finished running");
 
     Ok(())
 }

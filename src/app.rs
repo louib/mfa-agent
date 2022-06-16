@@ -28,7 +28,8 @@ impl MFAAgentApplication {
     pub fn run() {
         let app = glib::Object::new::<MFAAgentApplication>(&[
             ("application-id", &Some(get_app_id())),
-            ("flags", &gio::ApplicationFlags::empty()),
+            // The application flags are defined here https://docs.gtk.org/gio/flags.ApplicationFlags.html
+            ("flags", &gio::ApplicationFlags::FLAGS_NONE),
             ("resource-base-path", &Some(crate::consts::RESOURCES_NAMESPACE)),
         ])
         .unwrap();
