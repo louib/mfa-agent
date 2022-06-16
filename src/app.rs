@@ -9,9 +9,9 @@ use keepass::Database;
 use libadwaita::gdk::Display;
 use libadwaita::subclass::prelude::*;
 
-use crate::agent_window::AgentWindow;
-use crate::proxy_window::ProxyWindow;
-use crate::unlock_window::UnlockWindow;
+use crate::widgets::agent_window::AgentWindow;
+use crate::widgets::proxy_window::ProxyWindow;
+use crate::widgets::unlock_window::UnlockWindow;
 
 glib::wrapper! {
     pub struct MFAAgentApplication(ObjectSubclass<imp::MFAAgentApplication>)

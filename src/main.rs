@@ -36,12 +36,9 @@ mod consts;
 mod logger;
 mod tcp;
 mod utils;
-// mod numpad;
-mod agent_window;
 mod event;
-mod proxy_window;
+mod widgets;
 mod secrets;
-mod unlock_window;
 
 fn get_connection_type() -> crate::connection::ConnectionType {
     match env::var(crate::consts::CONNECTION_TYPE_VAR_NAME) {
