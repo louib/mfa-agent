@@ -1,3 +1,4 @@
+#[cfg(feature = "gtk")]
 #[macro_use]
 extern crate gtk_macros;
 
@@ -22,7 +23,9 @@ struct MFAAgent {
 }
 
 mod api;
+#[cfg(feature = "gtk")]
 mod app;
+#[cfg(feature = "bluetooth")]
 mod bluetooth;
 mod config;
 mod connection;
@@ -32,6 +35,7 @@ mod logger;
 mod secrets;
 mod tcp;
 mod utils;
+#[cfg(feature = "gtk")]
 mod widgets;
 
 #[tokio::main]
@@ -40,6 +44,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let args = MFAAgent::parse();
 
+    #[cfg(feature = "gtk")]
     crate::app::MFAAgentApplication::start_app();
 
     Ok(())

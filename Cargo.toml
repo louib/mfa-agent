@@ -18,6 +18,11 @@ keywords = [
 build = "src/build.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+#
+[features]
+default = []
+gtk = ["dep:gtk", "dep:gio", "dep:glib", "dep:gtk-macros", "dep:libadwaita"]
+bluetooth = ["dep:bluer"]
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
@@ -30,15 +35,17 @@ log = "0.4"
 simple-logging = "2.0"
 
 # GTK related libs
-gtk = { version = "0.4", package = "gtk4" }
-gio = { version = "0.15", features = ["v2_50"] }
-glib = "0.15"
-gtk-macros = "0.3"
-libadwaita = "0.1"
+gtk = { version = "0.4", package = "gtk4", optional = true }
+gio = { version = "0.15", features = ["v2_50"], optional = true }
+glib = { version = "0.15", optional = true }
+gtk-macros = { version = "0.3", optional = true }
+libadwaita = { version = "0.1", optional = true }
 # vgtk = "0.3"
 
+# See https://docs.rs/tokio/latest/tokio/#feature-flags
+# for all the tokio features
 tokio = { version = "1.14", features = ["full"] }
-bluer = { version = "0.15", features = ["bluetoothd"] }
+bluer = { version = "0.15", features = ["bluetoothd"], optional = true }
 
 futures = "0.3"
 async-std = "1.11.0"
@@ -50,4 +57,4 @@ keepass = "0.4"
 
 [build-dependencies]
 # Needed in the build dependencies to compile the gresources
-gtk = { version = "0.4", package = "gtk4" }
+gtk = { version = "0.4", package = "gtk4", optional = true }
