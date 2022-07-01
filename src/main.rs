@@ -29,6 +29,7 @@ mod app;
 mod bluetooth;
 mod config;
 mod connection;
+mod hid;
 mod consts;
 mod event;
 mod logger;
